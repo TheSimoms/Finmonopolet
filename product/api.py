@@ -15,6 +15,12 @@ class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     filter_fields = ('category', )
+    ordering_fields = (
+        'product_name', 'volume', 'price', 'litre_price', 'alcohol_price', 'category', 'vintage', 'alcohol',
+    )
+    search_fields = (
+        'product_name', 'category', 'vintage', 'country', 'feedstock', 'producer', 'wholesaler',
+    )
 
 
 SharedAPIRootRouter().register(r'products', ProductViewSet)
