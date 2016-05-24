@@ -3,6 +3,8 @@ import csv
 import os
 import sys
 import django
+import logging
+import math
 
 sys.path.append(os.path.abspath(os.path.join('/'.join(__file__.split('/')[:-1]), os.pardir)))
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'finmonopolet.settings')
@@ -11,6 +13,11 @@ django.setup()
 
 from product.models import Product
 from category.models import Category
+
+
+logging.basicConfig(level=logging.INFO)
+
+logger = logging.getLogger(__name__)
 
 
 def read_value(value, optional=False):
@@ -115,10 +122,21 @@ def update_database():
     """
     Fetch remote database from vinmonopolet.no. Parse the data and update local database.
     """
+    logger.info('Starting database update')
+
     with urllib.request.urlopen('http://www.vinmonopolet.no/api/produkter') as f:
         f = f.read().decode('iso-8859-1').split('\r\n')
 
-        for product_info in csv.DictReader(f[1:], delimiter=';', fieldnames=f[0].split(';')):
+        logger.info('Remote database read. Updating local database.')
+
+        reader = list(csv.DictReader(f[1:], delimiter=';', fieldnames=f[0].split(';')))
+
+        # Used for logging progress
+        number_of_items = len(reader)
+        logging_interval = math.ceil(number_of_items / 100)
+        i = 0
+
+        for product_info in reader:
             product_info = product_info_to_product(product_info)
 
             try:
@@ -130,6 +148,13 @@ def update_database():
                 product.save()
             except Product.DoesNotExist:
                 Product.objects.create(**product_info)
+
+            i += 1
+
+            if i % logging_interval == 0:
+                logger.info('%.2f%% complete' % int(i / number_of_items * 100))
+
+        logger.info('Database update complete')
 
 
 if __name__ == '__main__':
