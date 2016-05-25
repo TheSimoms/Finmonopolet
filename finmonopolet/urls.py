@@ -14,6 +14,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
 from django.conf.urls import url, include
+from django.views.generic import TemplateView
 
 from finmonopolet import settings
 from finmonopolet.api import SharedAPIRootRouter
@@ -33,4 +34,5 @@ def api_urls():
 
 urlpatterns = [
     url(r'^api/', include(api_urls())),
+    url(r'^$', TemplateView.as_view(template_name='index.html'), name='index'),
 ]

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="finmonopolet">
+<head>
+    <meta charset="UTF-8">
+
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <base href='/' />
+
+    <title ng-bind="title"></title>
+
+    {% include "stylesheets.html" %}
+</head>
+<body>
+<!-- Nav bar -->
+<nav class="navbar navbar-default navbar-static-top">
+    <div class="container">
+        <!-- Nav bar header -->
+        <div class="navbar-header">
+            <a class="navbar-brand" href="/">Finmonopolet</a>
+        </div>
+
+        <!-- Main nav bar -->
+        <ul class="nav navbar-nav">
+            <!-- Links -->
+            <li class="active">
+                <a href="/">Hjem</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<!-- Contents -->
+<div class="container">
+    <div ng-view=""></div>
+</div>
+
+{% include "javascripts.html" %}
+</body>
+</html>
