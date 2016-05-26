@@ -42,6 +42,7 @@ app.config(
                 url: '',
                 templateUrl: 'static/app/category/category.list.view.html',
                 controller: 'CategoryListCtrl',
+                parent: 'category',
                 resolve: {
                     categories: function (Category) {
                         return Category.get();
@@ -66,6 +67,46 @@ app.config(
                 },
                 ncyBreadcrumb: {
                     parent: 'category.list',
+                    label: '{{ category.name }}'
+                }
+            })
+            .state('statistics', {
+                url: '/statistics',
+                template: '<div ui-view></div>',
+                abstract: true
+            })
+            .state('statistics.list', {
+                url: '',
+                templateUrl: 'static/app/statistics/statistics.view.html',
+                controller: 'StatisticsCtrl',
+                parent: 'statistics',
+                resolve: {
+                    category: function () {
+                        return null;
+                    },
+                    statistics: function (Statistics) {
+                        return Statistics.get();
+                    }
+                },
+                ncyBreadcrumb: {
+                    label: 'Statistikk'
+                }
+            })
+            .state('statistics.details', {
+                url: '/{categoryId:int}',
+                templateUrl: 'static/app/statistics/statistics.view.html',
+                controller: 'StatisticsCtrl',
+                parent: 'statistics',
+                resolve: {
+                    category: function ($stateParams, Category) {
+                        return Category.get({id: $stateParams['categoryId']});
+                    },
+                    statistics: function ($stateParams, Statistics) {
+                        return Statistics.get({category: $stateParams['categoryId']});
+                    }
+                },
+                ncyBreadcrumb: {
+                    parent: 'statistics.list',
                     label: '{{ category.name }}'
                 }
             });

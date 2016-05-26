@@ -1,4 +1,4 @@
-<h1 class="margin-bottom">Kategorier</h1>
+<h2 class="margin-bottom">Kategorier</h2>
 
 <div class="row">
     <!-- Pagination -->
@@ -16,8 +16,11 @@
                     <table class="table table-borderless">
                         <tbody>
                             <tr>
-                                <td colspan="2">
+                                <td>
                                     <a ui-sref="category.details({categoryId: category.id})">Varer</a>
+                                </td>
+                                <td>
+                                    <a ui-sref="statistics.details({categoryId: category.id})">Statistikk</a>
                                 </td>
                             </tr>
                             <tr>
