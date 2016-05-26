@@ -29,7 +29,6 @@ app.config(
                 url: '/',
                 templateUrl: 'static/app/front-page/front-page.view.html',
                 controller: 'FrontPageCtrl',
-                title: '',
                 ncyBreadcrumb: {
                     label: 'Hjem'
                 }
@@ -43,7 +42,6 @@ app.config(
                 url: '',
                 templateUrl: 'static/app/category/category.list.view.html',
                 controller: 'CategoryListCtrl',
-                title: 'Kategorier',
                 resolve: {
                     categories: function (Category) {
                         return Category.get();
@@ -57,7 +55,6 @@ app.config(
                 url: '/{categoryId:int}',
                 templateUrl: 'static/app/category/category.details.view.html',
                 controller: 'CategoryDetailCtrl',
-                title: 'Derp',
                 parent: 'category',
                 resolve: {
                     category: function ($stateParams, Category) {

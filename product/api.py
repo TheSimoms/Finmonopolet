@@ -21,7 +21,7 @@ class ProductSerializer(serializers.ModelSerializer):
         model = Product
 
 
-class ProductViewSet(viewsets.ModelViewSet):
+class ProductViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Product.objects.all()
 
     serializer_class = ProductSerializer

@@ -6,10 +6,14 @@ import django
 import logging
 import math
 
+from django.db.transaction import atomic
+
 sys.path.append(os.path.abspath(os.path.join('/'.join(__file__.split('/')[:-1]), os.pardir)))
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'finmonopolet.settings')
 
 django.setup()
+
+import datetime
 
 from product.models import Product
 from category.models import Category
@@ -66,8 +70,13 @@ def product_info_to_product(product_info):
     litre_price = read_float(product_info['Literpris'])
     alcohol = read_float(product_info['Alkohol'])
 
-    if alcohol == 0.0:
-        alcohol_price = -1
+    vintage = read_integer(product_info['Argang'], True)
+
+    if vintage is None:
+        vintage = datetime.date.today().year
+
+    if alcohol < 1.0:
+        alcohol_price = None
     else:
         alcohol_price = litre_price / alcohol
 
@@ -98,7 +107,7 @@ def product_info_to_product(product_info):
         'district': read_string(product_info['Distrikt'], True),
         'sub_district': read_string(product_info['Underdistrikt'], True),
 
-        'vintage': read_integer(product_info['Argang'], True),
+        'vintage': vintage,
 
         'feedstock': read_string(product_info['Rastoff'], True),
         'production_method': read_string(product_info['Metode'], True),
@@ -118,6 +127,7 @@ def product_info_to_product(product_info):
     }
 
 
+@atomic()
 def update_database():
     """
     Fetch remote database from vinmonopolet.no. Parse the data and update local database.
