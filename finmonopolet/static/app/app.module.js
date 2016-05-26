@@ -2,10 +2,12 @@ var app = angular.module('finmonopolet',
     [
         'ngAnimate',
         'ngResource',
-        'ngRoute',
         'ngTouch',
 
         'ui.bootstrap',
+        'ui.router',
+
+        'ncy-angular-breadcrumb',
 
         'chart.js',
         'smart-table'

@@ -6,7 +6,7 @@ from category.models import Category
 
 class Product(models.Model):
     product_number = models.IntegerField(verbose_name='Product ID', unique=True)
-    product_name = models.CharField(verbose_name='Product name', max_length=255)
+    name = models.CharField(verbose_name='Product name', max_length=255)
 
     url = models.URLField(verbose_name='Product URL')
 
@@ -66,7 +66,7 @@ class Product(models.Model):
     cork = models.CharField(verbose_name='Cork type', max_length=255, blank=True, null=True)
 
     class Meta:
-        ordering = ('product_name', 'volume', )
+        ordering = ('name', 'volume', )
 
     def __str__(self):
-        return '%s %f%% (%f)' % (self.product_name, float(self.alcohol), float(self.volume))
+        return '%s %f%% (%f)' % (self.name, float(self.alcohol), float(self.volume))

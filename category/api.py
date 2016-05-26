@@ -10,7 +10,7 @@ class CategorySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Category
-        fields = ('name', 'number_of_products', )
+        fields = ('id', 'name', 'number_of_products', )
 
 
 class CategoryViewSet(viewsets.ModelViewSet):

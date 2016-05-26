@@ -1,1 +1,22 @@
 .nav, .pagination, .carousel, .panel-title a { cursor: pointer; }
+
+.margin-top {
+    margin-top: 20px;
+}
+.margin-left {
+    margin-left: 20px;
+}
+.margin-bottom {
+    margin-bottom: 20px;
+}
+.margin-right {
+    margin-right: 20px;
+}
+
+.interact {
+    cursor: pointer;
+}
+
+.table-borderless td, .table-borderless th {
+    border: none !important;
+}

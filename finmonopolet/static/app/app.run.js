@@ -1,7 +1,7 @@
-app.run(['$rootScope', function($rootScope) {
-    $rootScope.$on('$routeChangeSuccess', function (event, current) {
-        var title = current.$$route.title;
-
-        $rootScope.title = 'Finmonopolet' + (title.length ? ' - ' + title : '');
-    });
-}]);
+app.run(
+    function($rootScope) {
+        $rootScope.$on('$stateChangeStart', function (event, current) {
+            $rootScope.title = 'Finmonopolet' + (current.title.length ? ' - ' + current.title : '');
+        });
+    }
+);

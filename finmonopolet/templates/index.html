@@ -12,20 +12,21 @@
 
     {% include "stylesheets.html" %}
 </head>
+
 <body>
 <!-- Nav bar -->
 <nav class="navbar navbar-default navbar-static-top">
     <div class="container">
         <!-- Nav bar header -->
         <div class="navbar-header">
-            <a class="navbar-brand" href="/">Finmonopolet</a>
+            <a class="navbar-brand" ui-sref="home">Finmonopolet</a>
         </div>
 
         <!-- Main nav bar -->
         <ul class="nav navbar-nav">
             <!-- Links -->
             <li class="active">
-                <a href="/">Hjem</a>
+                <a ui-sref="home">Hjem</a>
             </li>
         </ul>
     </div>
@@ -33,7 +34,11 @@
 
 <!-- Contents -->
 <div class="container">
-    <div ng-view=""></div>
+    <!-- Breadcrumb -->
+    <div ncy-breadcrumb></div>
+
+    <!-- View -->
+    <div ui-view=""></div>
 </div>
 
 {% include "javascripts.html" %}

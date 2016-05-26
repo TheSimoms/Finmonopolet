@@ -1,0 +1,39 @@
+<h1 ng-bind="category.name"></h1>
+
+<div class="row">
+    <!-- Pagination -->
+    <custom-pagination total-items="products.count" page-changed="pageChanged"></custom-pagination>
+
+    <!-- Products -->
+    <div ng-show="products.$resolved">
+        <div class="col-md-4 col-sm-6" ng-repeat="product in products.results">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h1 class="panel-title" ng-bind="product.name"></h1>
+                    </div>
+                    <div class="panel-body">
+                        <table class="table table-borderless">
+                            <tbody>
+                                <tr>
+                                    <td>Volum</td>
+                                    <td>{{ product.volume }} liter</td>
+                                </tr>
+                                <tr>
+                                    <td>Literpris</td>
+                                    <td>{{ product.litre_price }} </td>
+                                </tr>
+                                <tr>
+                                    <td>Pris per alkoholenhet</td>
+                                    <td>{{ product.alcohol_price }} </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+        </div>
+    </div>
+    <div ng-show="!products.$resolved">
+        <i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i>
+        <span class="sr-only">Laster...</span>
+    </div>
+</div>

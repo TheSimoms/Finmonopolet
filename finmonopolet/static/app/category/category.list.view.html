@@ -1,0 +1,39 @@
+<h1 class="margin-bottom">Kategorier</h1>
+
+<div class="row">
+    <!-- Pagination -->
+    <custom-pagination total-items="categories.count" page-changed="pageChanged"></custom-pagination>
+
+    <!-- Categories -->
+    <div ng-show="categories.$resolved">
+        <div class="col-md-4 col-sm-6" ng-repeat="category in categories.results"
+             ng-show="category.number_of_products > 0">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h1 class="panel-title" ng-bind="category.name"></h1>
+                </div>
+                <div class="panel-body">
+                    <table class="table table-borderless">
+                        <tbody>
+                            <tr>
+                                <td colspan="2">
+                                    <a ui-sref="category.details({categoryId: category.id})">Varer</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Antall varer</td>
+                                <td>{{ category.number_of_products }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading -->
+    <div ng-show="!categories.$resolved">
+        <i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i>
+        <span class="sr-only">Laster...</span>
+    </div>
+</div>

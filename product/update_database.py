@@ -73,7 +73,7 @@ def product_info_to_product(product_info):
 
     return {
         'product_number': read_integer(product_info['Varenummer']),
-        'product_name': read_string(product_info['Varenavn']),
+        'name': read_string(product_info['Varenavn']),
 
         'url': read_string(product_info['Vareurl']),
 

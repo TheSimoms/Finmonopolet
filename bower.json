@@ -5,11 +5,12 @@
         "angular": "1.5.5",
         "angular-animate": "1.5.5",
         "angular-resource": "1.5.5",
-        "angular-route": "1.5.5",
         "angular-touch": "1.5.5",
 
         "angular-smart-table": "2.1.8",
         "angular-chart.js": "0.10.2",
+        "angular-ui-router": "0.3.0",
+        "angular-breadcrumb": "0.4.1",
 
         "bootstrap-css": "3.3.6",
 
