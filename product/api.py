@@ -3,7 +3,9 @@ import django_filters
 from rest_framework import serializers, viewsets, filters
 
 from finmonopolet.api import SharedAPIRootRouter
+
 from product.models import Product
+from category.models import Category
 
 
 class ProductFilter(filters.FilterSet):
@@ -14,8 +16,14 @@ class ProductFilter(filters.FilterSet):
         fields = ('category', 'category_name', )
 
 
+class CategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Category
+        fields = ('id', 'name', )
+
+
 class ProductSerializer(serializers.ModelSerializer):
-    category = serializers.StringRelatedField()
+    category = CategorySerializer()
 
     class Meta:
         model = Product

@@ -28,35 +28,35 @@ app.config(
             .state('home', {
                 url: '/',
                 templateUrl: 'static/app/front-page/front-page.view.html',
-                controller: 'FrontPageCtrl',
                 ncyBreadcrumb: {
                     label: 'Hjem'
                 }
             })
-            .state('category', {
-                url: '/category',
+            .state('assortment', {
+                url: '/assortment',
                 template: '<div ui-view></div>',
                 abstract: true
             })
-            .state('category.list', {
+            .state('assortment.list', {
                 url: '',
-                templateUrl: 'static/app/category/category.list.view.html',
-                controller: 'CategoryListCtrl',
-                parent: 'category',
+                templateUrl: 'static/app/assortment/assortment.view.html',
+                controller: 'AssortmentCtrl',
                 resolve: {
                     categories: function (Category) {
                         return Category.get();
+                    },
+                    products: function (Product) {
+                        return Product.get();
                     }
                 },
                 ncyBreadcrumb: {
-                    label: 'Kategorier'
+                    label: 'Vareutvalg'
                 }
             })
-            .state('category.details', {
-                url: '/{categoryId:int}',
-                templateUrl: 'static/app/category/category.details.view.html',
+            .state('assortment.category', {
+                url: '/category/{categoryId:int}',
+                templateUrl: 'static/app/assortment/category/category.details.view.html',
                 controller: 'CategoryDetailCtrl',
-                parent: 'category',
                 resolve: {
                     category: function ($stateParams, Category) {
                         return Category.get({id: $stateParams['categoryId']});
@@ -66,8 +66,22 @@ app.config(
                     }
                 },
                 ncyBreadcrumb: {
-                    parent: 'category.list',
+                    parent: 'assortment.list',
                     label: '{{ category.name }}'
+                }
+            })
+            .state('assortment.product', {
+                url: '/product/{productId:int}',
+                templateUrl: 'static/app/assortment/product/product.details.view.html',
+                controller: 'ProductDetailCtrl',
+                resolve: {
+                    product: function ($stateParams, Product) {
+                        return Product.get({id: $stateParams['productId']});
+                    }
+                },
+                ncyBreadcrumb: {
+                    parent: 'assortment.category({categoryId: product.category.id})',
+                    label: '{{ product.name }}'
                 }
             })
             .state('statistics', {
@@ -79,7 +93,6 @@ app.config(
                 url: '',
                 templateUrl: 'static/app/statistics/statistics.view.html',
                 controller: 'StatisticsCtrl',
-                parent: 'statistics',
                 resolve: {
                     category: function () {
                         return null;
@@ -96,7 +109,6 @@ app.config(
                 url: '/{categoryId:int}',
                 templateUrl: 'static/app/statistics/statistics.view.html',
                 controller: 'StatisticsCtrl',
-                parent: 'statistics',
                 resolve: {
                     category: function ($stateParams, Category) {
                         return Category.get({id: $stateParams['categoryId']});
