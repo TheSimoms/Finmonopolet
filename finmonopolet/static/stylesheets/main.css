@@ -20,3 +20,22 @@
 .table-borderless td, .table-borderless th {
     border: none !important;
 }
+
+
+.product-heading {
+    text-align: left;
+}
+.product-heading h5 {
+    font-weight: bold;
+    margin: 0;
+}
+.product-heading span {
+    font-weight: bold;
+}
+.product-meta {
+    text-align: right;
+}
+.product-meta .price {
+    font-weight: bold;
+    color: #4BB047;
+}

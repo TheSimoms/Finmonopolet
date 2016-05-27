@@ -8,7 +8,7 @@ app.directive('customPagination', function () {
         },
         templateUrl: 'static/app/common/directives/pagination/pagination.template.html',
         link: function ($scope) {
-            $scope.itemsPerPage = $scope.itemsPerPage || 6;
+            $scope.itemsPerPage = $scope.itemsPerPage || 12;
             $scope.model.$promise.then(function () {
                 $scope.totalItems = $scope.model.count;
             });

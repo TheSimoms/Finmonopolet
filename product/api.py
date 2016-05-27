@@ -1,19 +1,9 @@
-import django_filters
-
-from rest_framework import serializers, viewsets, filters
+from rest_framework import serializers, viewsets
 
 from finmonopolet.api import SharedAPIRootRouter
 from category.api import CategorySerializer
 
 from product.models import Product
-
-
-class ProductFilter(filters.FilterSet):
-    category_name = django_filters.CharFilter(name='category__name')
-
-    class Meta:
-        model = Product
-        fields = ('category', 'category_name', )
 
 
 class ProductSerializer(serializers.ModelSerializer):
@@ -26,18 +16,24 @@ class ProductSerializer(serializers.ModelSerializer):
 
 class ProductListSerializer(ProductSerializer):
     class Meta(ProductSerializer.Meta):
-        fields = ('id', 'name', 'category', 'volume', 'price', 'litre_price', 'alcohol_price', 'alcohol', )
+        fields = (
+            'id', 'name', 'category', 'country', 'producer', 'volume', 'price', 'litre_price', 'alcohol_price',
+            'alcohol',
+
+        )
 
 
 class ProductViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Product.objects.all()
-    filter_class = ProductFilter
 
+    filter_fields = (
+        'category', 'country', 'producer',
+    )
     ordering_fields = (
-        'name', 'volume', 'price', 'litre_price', 'alcohol_price', 'category', 'vintage', 'alcohol',
+        'name', 'category', 'vintage', 'volume', 'price', 'litre_price', 'alcohol_price', 'alcohol',
     )
     search_fields = (
-        'name', 'category', 'vintage', 'country', 'feedstock', 'producer', 'wholesaler',
+        'name', 'category', 'vintage', 'country', 'producer', 'feedstock', 'wholesaler',
     )
 
     def get_serializer_class(self):
