@@ -22,20 +22,20 @@
 }
 
 
-.product-heading {
+.item-heading {
     text-align: left;
 }
-.product-heading h5 {
+.item-heading h5 {
     font-weight: bold;
     margin: 0;
 }
-.product-heading span {
+.item-heading span {
     font-weight: bold;
 }
-.product-meta {
+.item-meta {
     text-align: right;
 }
-.product-meta .price {
+.item-meta .price {
     font-weight: bold;
     color: #4BB047;
 }

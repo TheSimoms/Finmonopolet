@@ -1,39 +1,5 @@
 <h2 ng-bind="category.name"></h2>
 
 <div class="row">
-    <!-- Pagination -->
-    <custom-pagination model="products" resource="productResource"></custom-pagination>
-
-    <!-- Products -->
-    <div ng-show="products.$resolved">
-        <div class="col-md-4 col-sm-6" ng-repeat="product in products.results">
-            <div class="thumbnail">
-                <div class="wrapper">
-                    <div class="caption product-heading">
-                        <a ui-sref="assortment.product({productId: product.id})">
-                            <h5 ng-bind="product.name"></h5>
-                        </a>
-                        <a ui-sref="assortment.category({categoryId: product.category.id})">
-                            <span ng-bind="product.category.name"></span>
-                        </a>
-                    </div>
-                </div>
-                <div class="wrapper">
-                    <div class="product-meta">
-                        <small>Volum: {{ product.volume }} l</small>
-                        <div class="price">
-                            Pris: {{ product.price }},-<br />
-                            {{ product.alcohol_price }},- per alkoholenhet
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Loading -->
-    <div ng-show="!products.$resolved">
-        <i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i>
-        <span class="sr-only">Laster...</span>
-    </div>
+    <item-list model="products" resource="productResource"></item-list>
 </div>
