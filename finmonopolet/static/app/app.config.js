@@ -80,7 +80,8 @@ app.config(
                     }
                 },
                 ncyBreadcrumb: {
-                    parent: 'assortment.category({categoryId: product.category.id})',
+                    // FIXME: Add category as parent
+                    parent: 'assortment.list',
                     label: '{{ product.name }}'
                 }
             })

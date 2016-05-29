@@ -17,9 +17,8 @@ class ProductSerializer(serializers.ModelSerializer):
 class ProductListSerializer(ProductSerializer):
     class Meta(ProductSerializer.Meta):
         fields = (
-            'id', 'name', 'category', 'country', 'producer', 'volume', 'price', 'litre_price', 'alcohol_price',
-            'alcohol',
-
+            'id', 'name', 'category', 'country', 'producer', 'volume', 'alcohol', 'price', 'litre_price',
+            'alcohol_price',
         )
 
 
@@ -30,10 +29,10 @@ class ProductViewSet(viewsets.ReadOnlyModelViewSet):
         'category', 'country', 'producer',
     )
     ordering_fields = (
-        'name', 'category', 'vintage', 'volume', 'price', 'litre_price', 'alcohol_price', 'alcohol',
+        'name', 'category', 'country', 'producer', 'volume', 'alcohol', 'price', 'litre_price', 'alcohol_price',
     )
     search_fields = (
-        'name', 'category', 'vintage', 'country', 'producer', 'feedstock', 'wholesaler',
+        'name', 'category__name', 'vintage', 'country', 'producer', 'feedstock', 'wholesaler',
     )
 
     def get_serializer_class(self):

@@ -75,8 +75,9 @@ def product_info_to_product(product_info):
     if vintage is None:
         vintage = datetime.date.today().year
 
-    if alcohol < 1.0:
-        alcohol_price = None
+    if alcohol == 0.0:
+        # FIXME: Un-hack this
+        alcohol_price = 99999.9
     else:
         alcohol_price = litre_price / alcohol
 
