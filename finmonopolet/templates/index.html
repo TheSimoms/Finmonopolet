@@ -25,13 +25,13 @@
         <!-- Main nav bar -->
         <ul class="nav navbar-nav">
             <!-- Links -->
-            <li>
+            <li ng-class="{ active: isActiveState('home')}">
                 <a ui-sref="home">Hjem</a>
             </li>
-            <li class="nav navbar-nav">
+            <li ng-class="{ active: isActiveState('assortment')}">
                 <a ui-sref="assortment.list">Vareutvalg <i class="fa fa-glass"></i></a>
             </li>
-            <li class="nav navbar-nav">
+            <li ng-class="{ active: isActiveState('statistics')}">
                 <a ui-sref="statistics.list">Statistikk <i class="fa fa-pie-chart"></i></a>
             </li>
         </ul>
