@@ -14,13 +14,15 @@ class StoreSerializer(serializers.ModelSerializer):
 
 class StoreListSerializer(StoreSerializer):
     class Meta(StoreSerializer.Meta):
-        fields = ('id', 'name', 'address', 'zip_code', 'postal', 'category', 'latitude', 'longitude', 'opening_times', )
+        fields = ('id', 'name', 'address', 'zip_code', 'postal', 'latitude', 'longitude', 'opening_times', )
 
 
 class StoreViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Store.objects.all()
 
-    ordering_fields = ('name', 'zip_code', 'postal', 'category', )
+    pagination_class = None
+
+    ordering_fields = ('name', 'zip_code', 'postal', 'category' )
 
     def get_serializer_class(self):
         if self.action == 'list':
@@ -28,7 +30,7 @@ class StoreViewSet(viewsets.ReadOnlyModelViewSet):
         elif self.action == 'retrieve':
             return StoreSerializer
         else:
-            return StoreSerializer
+            return StoreListSerializer
 
 
 SharedAPIRootRouter().register(r'stores', StoreViewSet)

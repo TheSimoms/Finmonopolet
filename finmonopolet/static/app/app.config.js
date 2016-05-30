@@ -19,7 +19,6 @@ app.config(
     }
 );
 
-
 app.config(
     function ($stateProvider, $urlRouterProvider) {
         $urlRouterProvider.otherwise('/');
@@ -107,7 +106,7 @@ app.config(
                 }
             })
             .state('statistics.details', {
-                url: '/{categoryId:int}',
+                url: '/category/{categoryId:int}',
                 templateUrl: 'static/app/statistics/statistics.view.html',
                 controller: 'StatisticsCtrl',
                 resolve: {
@@ -121,6 +120,38 @@ app.config(
                 ncyBreadcrumb: {
                     parent: 'statistics.list',
                     label: '{{ category.name }}'
+                }
+            })
+            .state('store', {
+                url: '/store',
+                template: '<div ui-view></div>',
+                abstract: true
+            })
+            .state('store.list', {
+                url: '',
+                templateUrl: 'static/app/store/store.list.view.html',
+                controller: 'StoreListCtrl',
+                resolve: {
+                    stores: function (Store) {
+                        return Store.query();
+                    }
+                },
+                ncyBreadcrumb: {
+                    label: 'Butikker'
+                }
+            })
+            .state('store.details', {
+                url: '/{storeId:int}',
+                templateUrl: 'static/app/store/store.details.view.html',
+                controller: 'StoreDetailsCtrl',
+                resolve: {
+                    store: function ($stateParams, Store) {
+                        return Store.get({id: $stateParams['storeId']});
+                    }
+                },
+                ncyBreadcrumb: {
+                    parent: 'store.list',
+                    label: '{{ store.name }}'
                 }
             });
     }

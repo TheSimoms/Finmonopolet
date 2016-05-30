@@ -7,6 +7,8 @@ var app = angular.module('finmonopolet',
         'ui.bootstrap',
         'ui.router',
 
+        'uiGmapgoogle-maps',
+
         'ncy-angular-breadcrumb',
 
         'chart.js',

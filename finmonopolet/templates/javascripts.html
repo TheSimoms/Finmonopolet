@@ -25,6 +25,11 @@
 <!-- UI Bootstrap -->
 <script type="text/javascript" src="{% static 'libs/angular-bootstrap/ui-bootstrap-tpls.min.js' %}"></script>
 
+<!-- UI Google Maps -->
+<script src="{% static 'libs/lodash/dist/lodash.min.js' %}"></script>
+<script src="{% static 'libs/angular-simple-logger/dist/angular-simple-logger.min.js' %}"></script>
+<script src="{% static 'libs/angular-google-maps/dist/angular-google-maps.min.js' %}"></script>
+<script src="//maps.googleapis.com/maps/api/js?v=3&key=AIzaSyAK1xIQYWyE0gzWe22AXOjWCVVEJg2v-x4"></script>
 
 <!-- App files -->
 <!-- App -->
@@ -36,6 +41,7 @@
 <script type="text/javascript" src="{% static 'app/common/resources/product.resource.js' %}"></script>
 <script type="text/javascript" src="{% static 'app/common/resources/category.resource.js' %}"></script>
 <script type="text/javascript" src="{% static 'app/common/resources/statistics.resource.js' %}"></script>
+<script type="text/javascript" src="{% static 'app/common/resources/store.resource.js' %}"></script>
 
 <!-- Directives -->
 <script type="text/javascript" src="{% static 'app/common/directives/item-list/item-list.directive.js' %}"></script>
@@ -48,3 +54,7 @@
 
 <!-- Statistic -->
 <script type="text/javascript" src="{% static 'app/statistics/statistics.controller.js' %}"></script>
+
+<!-- Store -->
+<script type="text/javascript" src="{% static 'app/store/store.list.controller.js' %}"></script>
+<script type="text/javascript" src="{% static 'app/store/store.details.controller.js' %}"></script>

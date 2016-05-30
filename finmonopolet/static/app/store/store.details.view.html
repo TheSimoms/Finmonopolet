@@ -1,0 +1,5 @@
+<h2 ng-bind="store.name"></h2>
+
+<ui-gmap-google-map ng-if="map" center="map.center" zoom="map.zoom">
+    <ui-gmap-marker idKey="store.name" coords="marker"></ui-gmap-marker>
+</ui-gmap-google-map>
