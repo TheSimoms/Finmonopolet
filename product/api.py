@@ -8,6 +8,7 @@ from product.models import Product
 
 class ProductSerializer(serializers.ModelSerializer):
     category = CategorySerializer()
+    store_category = serializers.StringRelatedField()
 
     class Meta:
         model = Product

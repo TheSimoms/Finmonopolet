@@ -2,6 +2,7 @@ from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 
 from category.models import Category
+from store.models import StoreCategory
 
 
 class Product(models.Model):
@@ -68,6 +69,9 @@ class Product(models.Model):
     cork = models.CharField(verbose_name='Cork type', max_length=255, blank=True, null=True)
 
     suits = models.CharField(verbose_name='Suits', max_length=255, blank=True, null=True)
+    store_category = models.ForeignKey(
+        StoreCategory, on_delete=models.CASCADE, related_name='products', blank=True, null=True, db_index=True
+    )
 
     active = models.BooleanField(verbose_name='Tilgjengelig', default=True)
 

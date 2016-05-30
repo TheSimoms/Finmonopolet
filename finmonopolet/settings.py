@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'product',
     'category',
     'statistic',
+    'store',
 ]
 
 MIDDLEWARE_CLASSES = [

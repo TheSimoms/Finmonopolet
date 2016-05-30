@@ -5,6 +5,7 @@ import sys
 import django
 import logging
 import math
+import datetime
 
 from django.db.transaction import atomic
 
@@ -13,7 +14,7 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'finmonopolet.settings')
 
 django.setup()
 
-import datetime
+from finmonopolet.update_database import read_string, read_float, read_integer, read_store_category
 
 from product.models import Product
 from category.models import Category
@@ -22,41 +23,6 @@ from category.models import Category
 logging.basicConfig(level=logging.INFO)
 
 logger = logging.getLogger(__name__)
-
-
-def read_value(value, optional=False):
-    if len(value) == 0:
-        if optional:
-            return None
-        else:
-            raise ValueError('Mandatory value empty!')
-
-    if value in ['Ukjent', '0']:
-        return None
-
-    return value
-
-
-def read_float(value, optional=False):
-    value = read_value(value, optional)
-
-    if value is None:
-        return None
-
-    return float(value.replace(',', '.'))
-
-
-def read_integer(value, optional=False):
-    value = read_value(value, optional)
-
-    if value is None:
-        return None
-
-    return int(value)
-
-
-def read_string(value, optional=False):
-    return read_value(value, optional)
 
 
 def product_info_to_product(product_info):
@@ -141,17 +107,18 @@ def product_info_to_product(product_info):
         'cork': read_string(product_info['Korktype'], True),
 
         'suits': suits,
+        'store_category': read_store_category(product_info['Butikkategori']),
 
         'active': active,
     }
 
 
 @atomic()
-def update_database():
+def update_products():
     """
-    Fetch remote database from vinmonopolet.no. Parse the data and update local database.
+    Fetch remote product database from vinmonopolet.no. Parse the data and update local database.
     """
-    logger.info('Starting database update')
+    logger.info('Starting product database update')
 
     with urllib.request.urlopen('http://www.vinmonopolet.no/api/produkter') as f:
         f = f.read().decode('iso-8859-1').split('\r\n')
@@ -171,6 +138,8 @@ def update_database():
             try:
                 product = Product.objects.get(product_number=product_info['product_number'])
 
+                product.active = False
+
                 for key, value in product_info.items():
                     setattr(product, key, value)
 
@@ -187,4 +156,4 @@ def update_database():
 
 
 if __name__ == '__main__':
-    update_database()
+    update_products()
