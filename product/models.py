@@ -67,6 +67,10 @@ class Product(models.Model):
     packaging = models.CharField(verbose_name='Packaging type', max_length=255)
     cork = models.CharField(verbose_name='Cork type', max_length=255, blank=True, null=True)
 
+    suits = models.CharField(verbose_name='Suits', max_length=255, blank=True, null=True)
+
+    active = models.BooleanField(verbose_name='Tilgjengelig', default=True)
+
     class Meta:
         ordering = ('name', 'volume', )
 

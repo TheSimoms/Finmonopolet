@@ -23,7 +23,7 @@ class ProductListSerializer(ProductSerializer):
 
 
 class ProductViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Product.objects.all()
+    queryset = Product.objects.filter(active=True)
 
     filter_fields = (
         'category', 'country', 'producer',

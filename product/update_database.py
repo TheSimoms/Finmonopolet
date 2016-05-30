@@ -81,6 +81,20 @@ def product_info_to_product(product_info):
     else:
         alcohol_price = litre_price / alcohol
 
+    active = read_string(product_info['Produktutvalg']) in [
+        'Basisutvalget', 'Partiutvalget', 'Bestillingsutvalget'
+    ]
+
+    suits_list = []
+
+    for field_name in ['Passertil01', 'Passertil02', 'Passertil03']:
+        value = read_string(product_info[field_name], True)
+
+        if value is not None:
+            suits_list.append(value)
+
+    suits = ', '.join(suits_list) if len(suits_list) else None
+
     return {
         'product_number': read_integer(product_info['Varenummer']),
         'name': read_string(product_info['Varenavn']),
@@ -125,6 +139,10 @@ def product_info_to_product(product_info):
 
         'packaging': product_info['Emballasjetype'],
         'cork': read_string(product_info['Korktype'], True),
+
+        'suits': suits,
+
+        'active': active,
     }
 
 
