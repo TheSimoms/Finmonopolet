@@ -1,6 +1,6 @@
 <div ng-show="model.$resolved">
     <!-- Filtering -->
-    <div class="col-xs-12 margin-bottom">
+    <div class="row margin-bottom">
         <!-- Search -->
         <div class="col-md-4 col-sm-6">
             <form ng-submit="search(searchString)">
@@ -40,7 +40,7 @@
     </div>
 
     <!-- Items -->
-    <div class="col-xs-12">
+    <div class="row">
         <div class="col-md-4 col-sm-6" ng-repeat="item in model.results">
             <div class="thumbnail">
                 <div class="caption item-heading">
@@ -70,8 +70,10 @@
     </div>
 
     <!-- Pagination -->
-    <div class="col-xs-12">
-        <custom-pagination model="model" resource="resource" current-page="currentPage"></custom-pagination>
+    <div class="row">
+        <div class="col-sm-12">
+            <custom-pagination model="model" resource="resource" current-page="currentPage"></custom-pagination>
+        </div>
     </div>
 </div>
 

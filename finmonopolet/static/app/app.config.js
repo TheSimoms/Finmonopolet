@@ -133,7 +133,10 @@ app.config(
                 controller: 'StoreListCtrl',
                 resolve: {
                     stores: function (Store) {
-                        return Store.query();
+                        return Store.get();
+                    },
+                    storeLocations: function (Store) {
+                        return Store.getLocations();
                     }
                 },
                 ncyBreadcrumb: {

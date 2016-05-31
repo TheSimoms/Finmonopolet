@@ -1,5 +1,56 @@
 <h2>Butikker</h2>
 
-<ui-gmap-google-map ng-if="map" center="map.center" zoom="map.zoom">
-    <ui-gmap-markers models="markers" coords="'self'" type="'cluster'"></ui-gmap-markers>
-</ui-gmap-google-map>
+<div class="row">
+    <div class="col-md-7 col-sm-12">
+        <!-- Filtering -->
+        <div class="row margin-bottom">
+            <div class="col-sm-12">
+                <form ng-submit="search(searchString)">
+                    <div class="input-group">
+                        <input type="text" class="form-control" ng-model="searchString" placeholder="Søk...">
+                        <span class="input-group-btn">
+                            <button class="btn btn-default" type="button" ng-click="search(searchString)">
+                                <i class="fa fa-search"></i>
+                            </button>
+                        </span>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Stores -->
+        <div class="row">
+            <div class="col-sm-6" ng-repeat="store in stores.results">
+                <div class="thumbnail">
+                    <div class="caption item-heading">
+                        <h4>
+                            <a ui-sref="store.details({storeId: store.id})">
+                                {{ store.name }}
+                            </a>
+                        </h4>
+                        {{ store.address }}<br />
+                        {{ store.zip_code }} {{ store.postal }}
+                    </div>
+                    <div class="caption item-meta">
+                        <small>
+                            Åpningstider i dag: {{ getOpeningTimes(store.opening_times, currentDay) }}<br />
+                            Åpningstider i morgen: {{ getOpeningTimes(store.opening_times, (currentDay+1) % 7) }}
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pagination -->
+        <div class="row">
+            <custom-pagination model="stores" resource="storeResource" current-page="currentPage" items-per-page="6">
+            </custom-pagination>
+        </div>
+    </div>
+
+    <div class="col-md-5 col-sm-12">
+        <ui-gmap-google-map ng-if="map" center="map.center" zoom="map.zoom" class="pull-right">
+            <ui-gmap-markers models="markers" coords="'position'" options="'options'" type="'cluster'"></ui-gmap-markers>
+        </ui-gmap-google-map>
+    </div>
+</div>

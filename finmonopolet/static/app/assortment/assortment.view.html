@@ -7,23 +7,30 @@
     <uib-tab heading="Varetyper">
         <!-- Category list -->
         <div ng-show="categories.$resolved">
-            <div class="col-md-4 col-sm-6" ng-repeat="item in categories.results">
-                <div class="thumbnail">
-                    <div class="caption item-heading">
-                        <h4>
-                            <a ui-sref="assortment.category({categoryId: item.id})">
-                                {{ item.name }}
+            <div class="row">
+                <div class="col-md-4 col-sm-6" ng-repeat="item in categories.results">
+                    <div class="thumbnail">
+                        <div class="caption item-heading">
+                            <h4>
+                                <a ui-sref="assortment.category({categoryId: item.id})">
+                                    {{ item.name }}
+                                </a>
+                            </h4>
+                            <a ui-sref="statistics.details({categoryId: item.id})">
+                                Statistikk
                             </a>
-                        </h4>
-                        <a ui-sref="statistics.details({categoryId: item.id})">
-                            Statistikk
-                        </a>
-                    </div>
-                    <div class="caption item-meta">
-                        <div>
+                        </div>
+                        <div class="caption item-meta">
                             Antall varer: {{ item.number_of_products }}
                         </div>
                     </div>
+                </div>
+            </div>
+
+            <!-- Pagination -->
+            <div class="row">
+                <div class="col-sm-12">
+                    <custom-pagination model="categories" resource="categoryResource"></custom-pagination>
                 </div>
             </div>
         </div>
@@ -33,8 +40,5 @@
             <i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i>
             <span class="sr-only">Laster...</span>
         </div>
-
-        <!-- Pagination -->
-        <custom-pagination model="categories" resource="categoryResource"></custom-pagination>
     </uib-tab>
 </uib-tabset>
