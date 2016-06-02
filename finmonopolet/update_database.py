@@ -1,3 +1,4 @@
+from product.models import Suits
 from store.models import StoreCategory
 
 
@@ -40,11 +41,30 @@ def read_store_category(value):
     try:
         category_number = int(value[-1])
     except ValueError:
-        return None
+        category_number = 0
+
+    if category_number == 0:
+        category_name = 'Uavhengig sortiment'
+    else:
+        category_name = 'Butikkategori %d' % category_number
 
     try:
         category = StoreCategory.objects.get(category_number=category_number)
     except StoreCategory.DoesNotExist:
-        category = StoreCategory.objects.create(category_number=category_number)
+        category = StoreCategory.objects.create(category_number=category_number, name=category_name)
 
     return category
+
+
+def read_suits(value):
+    suits = []
+
+    for suit_name in value:
+        try:
+            suit = Suits.objects.get(name=suit_name)
+        except Suits.DoesNotExist:
+            suit = Suits.objects.create(name=suit_name)
+
+        suits.append(suit)
+
+    return suits

@@ -14,7 +14,7 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'finmonopolet.settings')
 
 django.setup()
 
-from finmonopolet.update_database import read_string, read_float, read_integer, read_store_category
+from finmonopolet.update_database import read_string, read_float, read_integer, read_store_category, read_suits
 
 from product.models import Product
 from category.models import Category
@@ -26,12 +26,15 @@ logger = logging.getLogger(__name__)
 
 
 def product_info_to_product(product_info):
-    category_name = read_string(product_info['Varetype'])
+    category_name = read_string(product_info['Varetype'], True)
+
+    if category_name is None:
+        category_name = 'Uspesifisert'
 
     try:
         category = Category.objects.get(name=category_name)
     except Category.DoesNotExist:
-        category = Category.objects.create(name=category_name)
+        category = Category.objects.create(name=category_name, canonical_name=category_name.lower())
 
     litre_price = read_float(product_info['Literpris'])
     alcohol = read_float(product_info['Alkohol'])
@@ -59,11 +62,13 @@ def product_info_to_product(product_info):
         if value is not None:
             suits_list.append(value)
 
-    suits = ', '.join(suits_list) if len(suits_list) else None
+    name = read_string(product_info['Varenavn'])
 
     return {
         'product_number': read_integer(product_info['Varenummer']),
-        'name': read_string(product_info['Varenavn']),
+
+        'name': name,
+        'canonical_name': name.lower(),
 
         'url': read_string(product_info['Vareurl']),
 
@@ -106,11 +111,10 @@ def product_info_to_product(product_info):
         'packaging': product_info['Emballasjetype'],
         'cork': read_string(product_info['Korktype'], True),
 
-        'suits': suits,
         'store_category': read_store_category(product_info['Butikkategori']),
 
         'active': active,
-    }
+    }, read_suits(suits_list)
 
 
 @atomic()
@@ -120,7 +124,9 @@ def update_products():
     """
     logger.info('Starting product database update')
 
-    with urllib.request.urlopen('http://www.vinmonopolet.no/api/produkter') as f:
+    with urllib.request.urlopen(
+            'https://www.vinmonopolet.no/medias/sys_master/products/products/hbc/hb0/8834253127710/produkter.csv'
+    ) as f:
         f = f.read().decode('iso-8859-1').split('\r\n')
 
         logger.info('Remote database read. Updating local database.')
@@ -133,19 +139,25 @@ def update_products():
         i = 0
 
         for product_info in reader:
-            product_info = product_info_to_product(product_info)
+            product_info, suits = product_info_to_product(product_info)
 
             try:
                 product = Product.objects.get(product_number=product_info['product_number'])
 
                 product.active = False
 
+                product.suits = suits
+
                 for key, value in product_info.items():
                     setattr(product, key, value)
 
                 product.save()
             except Product.DoesNotExist:
-                Product.objects.create(**product_info)
+                product = Product.objects.create(**product_info)
+
+                product.suits = suits
+
+                product.save()
 
             i += 1
 

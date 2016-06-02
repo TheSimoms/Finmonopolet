@@ -20,30 +20,33 @@
 
         <!-- Stores -->
         <div class="row">
-            <div class="col-sm-6" ng-repeat="store in stores.results">
+            <div class="col-sm-6" ng-repeat="item in model.results" ng-show="model.count>0">
                 <div class="thumbnail">
                     <div class="caption item-heading">
                         <h4>
-                            <a ui-sref="store.details({storeId: store.id})">
-                                {{ store.name }}
+                            <a ui-sref="store.details({storeId: item.id})">
+                                {{ item.name }}
                             </a>
                         </h4>
-                        {{ store.address }}<br />
-                        {{ store.zip_code }} {{ store.postal }}
+                        {{ item.address }}<br />
+                        {{ item.zip_code }} {{ item.postal }}
                     </div>
                     <div class="caption item-meta">
                         <small>
-                            Åpningstider i dag: {{ getOpeningTimes(store.opening_times, currentDay) }}<br />
-                            Åpningstider i morgen: {{ getOpeningTimes(store.opening_times, (currentDay+1) % 7) }}
+                            Åpningstider i dag: {{ getOpeningTimes(item.opening_times, currentDay) }}<br />
+                            Åpningstider i morgen: {{ getOpeningTimes(item.opening_times, (currentDay+1) % 7) }}
                         </small>
                     </div>
                 </div>
+            </div>
+            <div class="col-sm-12" ng-show="model.count==0">
+                Ingen butikker samsvarer med dine valg
             </div>
         </div>
 
         <!-- Pagination -->
         <div class="row">
-            <custom-pagination model="stores" resource="storeResource" current-page="currentPage" items-per-page="6">
+            <custom-pagination model="model" resource="resource" current-page="currentPage" items-per-page="6">
             </custom-pagination>
         </div>
     </div>

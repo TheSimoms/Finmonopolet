@@ -1,4 +1,4 @@
-.nav, .pagination, .carousel, .panel-title a { cursor: pointer; }
+.nav, .pagination, .carousel, .panel-title . a { cursor: pointer; }
 
 .margin-top {
     margin-top: 20px;
@@ -23,6 +23,9 @@
 
 .item-heading {
     text-align: left;
+}
+.item .item-heading {
+    min-height: 110px;
 }
 .item-heading h4 {
     font-weight: bold;

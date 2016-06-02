@@ -6,15 +6,13 @@ from django.core.validators import MinLengthValidator, MaxLengthValidator, MinVa
 
 class StoreCategory(models.Model):
     category_number = models.IntegerField(
-        verbose_name='Category number', validators=[MinValueValidator(1), MaxValueValidator(7)], unique=True,
+        verbose_name='Category number', validators=[MinValueValidator(0), MaxValueValidator(7)], unique=True,
         db_index=True
     )
+    name = models.CharField(verbose_name='Category name', max_length=255, unique=True, db_index=True)
 
     class Meta:
-        ordering = ('category_number', )
-
-    def __str__(self):
-        return 'Butikkategori %d' % self.category_number
+        ordering = ('category_number', 'name', )
 
 
 class Store(models.Model):

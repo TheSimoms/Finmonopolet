@@ -70,7 +70,9 @@ def update_stores():
     """
     logger.info('Starting store database update')
 
-    with urllib.request.urlopen('http://www.vinmonopolet.no/api/butikker') as f:
+    with urllib.request.urlopen(
+            'https://www.vinmonopolet.no/medias/sys_master/locations/locations/h3c/h4a/8834253946910.csv'
+    ) as f:
         f = f.read().decode('iso-8859-1').split('\r\n')
 
         logger.info('Remote database read. Updating local database.')

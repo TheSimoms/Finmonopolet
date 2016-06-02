@@ -1,4 +1,4 @@
-app.directive('itemList', function () {
+app.directive('itemList', function ($q, Category, Statistics) {
     return {
         restrict: 'E',
         scope: {
@@ -27,18 +27,44 @@ app.directive('itemList', function () {
 
             $scope.orderingFields = {
                 'name': 'Navn',
-                'category': 'Varetype',
+                'category': 'Varegruppe',
                 'country': 'Land',
                 'producer': 'Produsent',
                 'volume': 'Volum',
                 'alcohol': 'Alkoholinnhold',
                 'price': 'Pris',
-                'litre_price': 'Pris pr. liter',
-                'alcohol_price': 'Pris pr. %'
+                'litre_price': 'Pris per liter',
+                'alcohol_price': 'Pris per %'
             };
 
+            $q.all([
+                Category.getAll().$promise,
+                Statistics.getRanges().$promise
+            ]).then(function (data) {
+                $scope.filters = [
+                    { title: 'Varegruppe', filter_name: 'category', data: data[0], unit: '' },
+                    { title: 'Land', filter_name: 'country', unit: '' },
+                    { title: 'Produsent', filter_name: 'producer', unit: '' },
+                    { title: 'Passer til', filter_name: 'suits__id__in', unit: '' },
+                    { title: 'Pris', filter_name: 'price__range', unit: ',-', data: data[1]['price'] },
+                    { title: 'Volum', filter_name: 'volume__range', unit: ' l', data: data[1]['volume'] },
+                    {
+                        title: 'Alkoholinnhold', filter_name: 'alcohol__range', unit: ' %',
+                        data: data[1]['alcohol']
+                    },
+                    {
+                        title: 'Pris per liter', filter_name: 'litre_price__range', unit: 'kr per l',
+                        data: data[1]['litre_price']
+                    },
+                    {
+                        title: 'Pris per %', filter_name: 'alcohol_price__range', unit: 'kr per %',
+                        data: data[1]['alcohol_price']
+                    }
+                ];
+            });
+
             $scope.search = function (search) {
-                $scope.filtering.search = search;
+                $scope.filtering.search = search.toLowerCase();
             };
 
             $scope.filter = function () {

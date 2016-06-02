@@ -5,9 +5,16 @@ from category.models import Category
 from store.models import StoreCategory
 
 
+class Suits(models.Model):
+    name = models.CharField(verbose_name='Suits name', max_length=255, unique=True, db_index=True)
+
+
+
 class Product(models.Model):
     product_number = models.IntegerField(verbose_name='Product ID', unique=True, db_index=True)
+
     name = models.CharField(verbose_name='Product name', max_length=255, db_index=True)
+    canonical_name = models.CharField(verbose_name='Canonical product name', max_length=255, db_index=True)
 
     url = models.URLField(verbose_name='Product URL')
 
@@ -68,15 +75,18 @@ class Product(models.Model):
     packaging = models.CharField(verbose_name='Packaging type', max_length=255)
     cork = models.CharField(verbose_name='Cork type', max_length=255, blank=True, null=True)
 
-    suits = models.CharField(verbose_name='Suits', max_length=255, blank=True, null=True)
+    suits = models.ManyToManyField(
+        Suits, verbose_name='Suits', related_name='products', db_index=True, blank=True
+    )
     store_category = models.ForeignKey(
-        StoreCategory, on_delete=models.CASCADE, related_name='products', blank=True, null=True, db_index=True
+        StoreCategory, verbose_name='Store category', on_delete=models.CASCADE, related_name='products',
+        blank=True, null=True, db_index=True
     )
 
     active = models.BooleanField(verbose_name='Tilgjengelig', default=True)
 
     class Meta:
-        ordering = ('name', 'volume', )
+        ordering = ('canonical_name', 'volume', )
 
     def __str__(self):
         return '%s %f%% (%f)' % (self.name, float(self.alcohol), float(self.volume))

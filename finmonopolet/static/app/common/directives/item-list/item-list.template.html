@@ -2,7 +2,7 @@
     <!-- Filtering -->
     <div class="row margin-bottom">
         <!-- Search -->
-        <div class="col-md-4 col-sm-6">
+        <div class="col-md-offset-3 col-md-3 col-sm-6">
             <form ng-submit="search(searchString)">
                 <div class="input-group">
                     <input type="text" class="form-control" ng-model="searchString" placeholder="Søk...">
@@ -16,24 +16,20 @@
         </div>
 
         <!-- Ordering -->
-        <div class="col-md-4 col-sm-6">
-            <form class="form-inline">
-                <div class="form-group">
-                    <label for="ordering" class="control-label">Sortér:</label>
-
-                    <div class="input-group">
-                        <select id="ordering" class="form-control"
-                                ng-options="key as label for (key, label) in orderingFields"
-                                ng-model="ordering.field">
-                        </select>
-                        <span class="input-group-btn">
-                            <button class="btn btn-default" type="button"
-                                    ng-click="ordering.ascending = !ordering.ascending">
-                                <i class="fa fa-arrow-up" ng-show="ordering.ascending"></i>
-                                <i class="fa fa-arrow-down" ng-show="!ordering.ascending"></i>
-                            </button>
-                        </span>
-                    </div>
+        <div class="col-md-3 col-sm-6">
+            <form>
+                <div class="input-group">
+                    <select id="ordering" class="form-control"
+                            ng-options="key as label for (key, label) in orderingFields"
+                            ng-model="ordering.field">
+                    </select>
+                    <span class="input-group-btn">
+                        <button class="btn btn-default" type="button"
+                                ng-click="ordering.ascending = !ordering.ascending">
+                            <i class="fa fa-arrow-up" ng-show="ordering.ascending"></i>
+                            <i class="fa fa-arrow-down" ng-show="!ordering.ascending"></i>
+                        </button>
+                    </span>
                 </div>
             </form>
         </div>
@@ -41,29 +37,77 @@
 
     <!-- Items -->
     <div class="row">
-        <div class="col-md-4 col-sm-6" ng-repeat="item in model.results">
-            <div class="thumbnail">
-                <div class="caption item-heading">
-                    <h4>
-                        <a ui-sref="assortment.product({productId: item.id})">
-                            {{ item.name }}
+        <!-- Filtering -->
+        <div class="col-md-3 col-sm-12">
+            <h4>
+                Tilpass resultat
+            </h4>
+
+            <uib-accordion close-others="false" ng-show="filters">
+                <uib-accordion-group is-open="isOpen" ng-repeat="filter in filters">
+                    <uib-accordion-heading>
+                        <div class="row">
+                            <div class="col-xs-12">
+                                {{ filter.title }}
+                                <i class="fa fa-minus fa-pull-right" ng-show="isOpen"></i>
+                                <i class="fa fa-plus fa-pull-right" ng-show="!isOpen"></i>
+                            </div>
+                        </div>
+                    </uib-accordion-heading>
+
+                    <div class="list-group">
+                        <a ng-repeat="item in filter.data" class="list-group-item" role="button">
+                            {{ item.name }}{{ item.unit }}
+                            <span class="badge">
+                                {{ item.number_of_products }}
+                            </span>
                         </a>
-                    </h4>
-                    <a ui-sref="assortment.category({categoryId: item.category.id})">
-                        <span>{{ item.category.name }}</span>
-                    </a>
-                    ({{ item.country }})<br />
-                    {{ item.producer }}
-                </div>
-                <div class="caption item-meta">
-                    <small>
-                        {{ item.alcohol }}%<br />
-                        Volum: {{ item.volume }} l
-                    </small>
-                    <div class="price">
-                        Pris: {{ item.price }},-<br/>
-                        (<span>{{ item.litre_price }},- pr. liter</span><span ng-if="item.alcohol_price !=  99999.90">, {{ item.alcohol_price }},- pr. %</span>)
                     </div>
+                </uib-accordion-group>
+            </uib-accordion>
+
+            <div ng-show="!filters" class="margin-bottom margin-top">
+                <i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i>
+                <span class="sr-only">Laster...</span>
+            </div>
+        </div>
+
+        <!-- Items -->
+        <div class="col-md-9 col-sm-12">
+            <div class="row">
+                <div class="col-md-4 col-sm-6" ng-repeat="item in model.results" ng-show="model.count>0">
+                    <div class="thumbnail item">
+                        <div class="caption item-heading">
+                            <h4>
+                                <a ui-sref="assortment.product({productId: item.id})">
+                                    {{ item.name }}
+                                </a>
+                            </h4>
+                            <a ui-sref="assortment.category({categoryId: item.category.id})">
+                                <span>{{ item.category.name }}</span>
+                            </a>
+                            ({{ item.country }})<br />
+                            <span ng-if="item.producer">
+                                {{ item.producer }}
+                            </span>
+                            <span ng-if="!item.producer">
+                                Produsent ikke oppgitt
+                            </span>
+                        </div>
+                        <div class="caption item-meta">
+                            <small>
+                                {{ item.alcohol }} %<br />
+                                Volum: {{ item.volume }} l
+                            </small>
+                            <div class="price">
+                                Pris: {{ item.price }},-<br/>
+                                (<span>{{ item.litre_price }},- pr. liter</span><span ng-if="item.alcohol_price !=  99999.90">, {{ item.alcohol_price }},- pr. %</span>)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-12" ng-show="model.count==0">
+                    Ingen varer samsvarer med dine valg
                 </div>
             </div>
         </div>
@@ -71,7 +115,7 @@
 
     <!-- Pagination -->
     <div class="row">
-        <div class="col-sm-12">
+        <div class="col-md-offset-3 col-md-9 col-sm-12">
             <custom-pagination model="model" resource="resource" current-page="currentPage"></custom-pagination>
         </div>
     </div>

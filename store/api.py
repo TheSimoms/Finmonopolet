@@ -2,7 +2,13 @@ from rest_framework import serializers, viewsets, pagination
 from rest_framework.response import Response
 
 from finmonopolet.api import SharedAPIRootRouter
-from store.models import Store
+from store.models import Store, StoreCategory
+
+
+class StoreCategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = StoreCategory
+        fields = ('id', 'name', )
 
 
 class StoreListPagination(pagination.PageNumberPagination):
@@ -10,7 +16,7 @@ class StoreListPagination(pagination.PageNumberPagination):
 
 
 class StoreSerializer(serializers.ModelSerializer):
-    category = serializers.StringRelatedField()
+    category = StoreCategorySerializer()
 
     class Meta:
         model = Store
@@ -19,7 +25,7 @@ class StoreSerializer(serializers.ModelSerializer):
 
 class StoreListSerializer(StoreSerializer):
     class Meta(StoreSerializer.Meta):
-        fields = ('id', 'name', 'address', 'zip_code', 'postal', 'latitude', 'longitude', 'opening_times', )
+        fields = ('id', 'name', 'address', 'zip_code', 'postal', 'opening_times', )
 
 
 class StoreLocationSerializer(serializers.ModelSerializer):
@@ -33,7 +39,7 @@ class StoreViewSet(viewsets.ReadOnlyModelViewSet):
 
     pagination_class = StoreListPagination
 
-    ordering_fields = ('name', 'zip_code', 'postal', 'category', )
+    ordering_fields = ('name', 'zip_code', 'postal', )
     search_fields = (
         'name', 'address', 'zip_code', 'postal',
     )
@@ -55,5 +61,5 @@ class StoreLocationViewSet(viewsets.ViewSet):
         return Response(serializer.data)
 
 
-SharedAPIRootRouter().register(r'stores/information', StoreViewSet, base_name='information')
-SharedAPIRootRouter().register(r'stores/locations', StoreLocationViewSet, base_name='locations')
+SharedAPIRootRouter().register(r'stores/information', StoreViewSet, base_name='store_information')
+SharedAPIRootRouter().register(r'stores/locations', StoreLocationViewSet, base_name='store_locations')

@@ -1,0 +1,55 @@
+<div ng-show="model.$resolved">
+    <!-- Filtering -->
+    <div class="row margin-bottom">
+        <!-- Search -->
+        <div class="col-md-4 col-sm-6">
+            <form ng-submit="search(searchString)">
+                <div class="input-group">
+                    <input type="text" class="form-control" ng-model="searchString" placeholder="Søk...">
+                    <span class="input-group-btn">
+                        <button class="btn btn-default" type="button" ng-click="search(searchString)">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </span>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Items -->
+    <div class="row">
+        <div class="col-md-4 col-sm-6" ng-repeat="item in model.results" ng-show="model.count>0">
+            <div class="thumbnail">
+                <div class="caption item-heading">
+                    <h4>
+                        <a ui-sref="assortment.category({categoryId: item.id})">
+                            {{ item.name }}
+                        </a>
+                    </h4>
+                    <a ui-sref="statistics.details({categoryId: item.id})">
+                        Statistikk
+                    </a>
+                </div>
+                <div class="caption item-meta">
+                    Antall varer: {{ item.number_of_products }}
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-12" ng-show="model.count==0">
+            Ingen varegrupper samsvarer med dine valg
+        </div>
+    </div>
+
+    <!-- Pagination -->
+    <div class="row">
+        <div class="col-sm-12">
+            <custom-pagination model="model" resource="resource" current-page="currentPage"></custom-pagination>
+        </div>
+    </div>
+</div>
+
+<!-- Loading -->
+<div ng-show="!model.$resolved">
+    <i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i>
+    <span class="sr-only">Laster...</span>
+</div>

@@ -4,41 +4,8 @@
         <item-list model="products" resource="productResource"></item-list>
     </uib-tab>
 
-    <uib-tab heading="Varetyper">
-        <!-- Category list -->
-        <div ng-show="categories.$resolved">
-            <div class="row">
-                <div class="col-md-4 col-sm-6" ng-repeat="item in categories.results">
-                    <div class="thumbnail">
-                        <div class="caption item-heading">
-                            <h4>
-                                <a ui-sref="assortment.category({categoryId: item.id})">
-                                    {{ item.name }}
-                                </a>
-                            </h4>
-                            <a ui-sref="statistics.details({categoryId: item.id})">
-                                Statistikk
-                            </a>
-                        </div>
-                        <div class="caption item-meta">
-                            Antall varer: {{ item.number_of_products }}
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Pagination -->
-            <div class="row">
-                <div class="col-sm-12">
-                    <custom-pagination model="categories" resource="categoryResource"></custom-pagination>
-                </div>
-            </div>
-        </div>
-
-        <!-- Loading -->
-        <div ng-show="!categories.$resolved">
-            <i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i>
-            <span class="sr-only">Laster...</span>
-        </div>
+    <uib-tab heading="Varegrupper">
+        <!-- Product list -->
+        <category-list model="categories" resource="categoryResource"></category-list>
     </uib-tab>
 </uib-tabset>

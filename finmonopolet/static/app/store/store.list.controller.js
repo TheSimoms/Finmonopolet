@@ -1,8 +1,8 @@
 app.controller('StoreListCtrl', function ($scope, Store, stores, storeLocations, uiGmapGoogleMapApi) {
-    $scope.stores = stores;
+    $scope.model = stores;
     $scope.storeLocations = storeLocations;
 
-    $scope.storeResource = Store;
+    $scope.resource = Store;
 
     $scope.currentPage = 1;
 
@@ -39,7 +39,7 @@ app.controller('StoreListCtrl', function ($scope, Store, stores, storeLocations,
 
     $scope.filter = function () {
         Store.get($scope.filtering, function (data) {
-            $scope.stores = data;
+            $scope.model = data;
         });
     };
 
