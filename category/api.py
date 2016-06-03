@@ -1,7 +1,6 @@
 from django.db.models import Count
 
 from rest_framework import serializers, viewsets
-from rest_framework.response import Response
 
 from finmonopolet.api import SharedAPIRootRouter
 from category.models import Category
@@ -27,6 +26,8 @@ class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
         number_of_products__gt=0
     )
 
+    pagination_class = None
+
     ordering_fields = ('canonical_name', 'number_of_products', )
     search_fields = ('canonical_name', )
 
@@ -39,18 +40,4 @@ class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
             return CategorySerializer
 
 
-class CategoryFullListViewSet(viewsets.ViewSet):
-    def list(self, request):
-        queryset = Category.objects.annotate(
-            number_of_products=Count('products'),
-        ).filter(
-            number_of_products__gt=0
-        )
-
-        serializer = CategoryListSerializer(queryset, many=True)
-
-        return Response(serializer.data)
-
-
-SharedAPIRootRouter().register(r'categories/paged', CategoryViewSet, base_name='paged')
-SharedAPIRootRouter().register(r'categories/full', CategoryFullListViewSet, base_name='categories_full')
+SharedAPIRootRouter().register(r'categories', CategoryViewSet)

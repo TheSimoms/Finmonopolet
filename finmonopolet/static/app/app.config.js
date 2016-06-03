@@ -1,7 +1,6 @@
 app.config(
     function config($locationProvider) {
         $locationProvider.html5Mode(true);
-        $locationProvider.hashPrefix('!');
     }
 );
 
@@ -32,18 +31,18 @@ app.config(
                 }
             })
             .state('assortment', {
-                url: '/assortment',
+                url: '/vareutvalg',
                 template: '<div ui-view></div>',
                 abstract: true
             })
             .state('assortment.list', {
                 url: '',
-                templateUrl: 'static/app/assortment/assortment.view.html',
-                controller: 'AssortmentCtrl',
+                template: '<item-list model="products" resource="productResource"></item-list>',
+                controller: function ($scope, Product, products) {
+                    $scope.products = products;
+                    $scope.productResource = Product;
+                },
                 resolve: {
-                    categories: function (Category) {
-                        return Category.get();
-                    },
                     products: function (Product) {
                         return Product.get();
                     }
@@ -53,7 +52,7 @@ app.config(
                 }
             })
             .state('assortment.category', {
-                url: '/category/{categoryId:int}',
+                url: '/varegrupper/{categoryId:int}',
                 templateUrl: 'static/app/assortment/category/category.details.view.html',
                 controller: 'CategoryDetailCtrl',
                 resolve: {
@@ -70,7 +69,7 @@ app.config(
                 }
             })
             .state('assortment.product', {
-                url: '/product/{productId:int}',
+                url: '/varer/{productId:int}',
                 templateUrl: 'static/app/assortment/product/product.details.view.html',
                 controller: 'ProductDetailCtrl',
                 resolve: {
@@ -85,7 +84,7 @@ app.config(
                 }
             })
             .state('statistics', {
-                url: '/statistics',
+                url: '/statistikk',
                 template: '<div ui-view></div>',
                 abstract: true
             })
@@ -106,7 +105,7 @@ app.config(
                 }
             })
             .state('statistics.details', {
-                url: '/category/{categoryId:int}',
+                url: '/varegrupper/{categoryId:int}',
                 templateUrl: 'static/app/statistics/statistics.view.html',
                 controller: 'StatisticsCtrl',
                 resolve: {
@@ -123,7 +122,7 @@ app.config(
                 }
             })
             .state('store', {
-                url: '/store',
+                url: '/butikker',
                 template: '<div ui-view></div>',
                 abstract: true
             })

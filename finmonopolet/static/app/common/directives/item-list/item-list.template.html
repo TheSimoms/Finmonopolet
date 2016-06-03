@@ -1,4 +1,4 @@
-<div ng-show="model.$resolved">
+<div>
     <!-- Filtering -->
     <div class="row margin-bottom">
         <!-- Search -->
@@ -40,41 +40,100 @@
         <!-- Filtering -->
         <div class="col-md-3 col-sm-12">
             <h4>
-                Tilpass resultat
+                Filtrér resultat
             </h4>
 
-            <uib-accordion close-others="false" ng-show="filters">
-                <uib-accordion-group is-open="isOpen" ng-repeat="filter in filters">
+            <uib-accordion close-others="false">
+                <uib-accordion-group is-open="isOpen" ng-repeat="(filterLabel, filterValues) in filters">
                     <uib-accordion-heading>
                         <div class="row">
                             <div class="col-xs-12">
-                                {{ filter.title }}
+                                {{ filterValues.title }}
                                 <i class="fa fa-minus fa-pull-right" ng-show="isOpen"></i>
                                 <i class="fa fa-plus fa-pull-right" ng-show="!isOpen"></i>
                             </div>
                         </div>
                     </uib-accordion-heading>
 
-                    <div class="list-group">
-                        <a ng-repeat="item in filter.data" class="list-group-item" role="button">
-                            {{ item.name }}{{ item.unit }}
-                            <span class="badge">
-                                {{ item.number_of_products }}
-                            </span>
-                        </a>
+                    <table st-table="filterValues.displayData" st-safe-src="filterValues.data"
+                           class="col-xs-12">
+                        <thead>
+                            <tr>
+                                <th>
+                                    <input st-search="" class="form-control" placeholder="Søk..." type="text"/><br />
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="item in filterValues.displayData" ng-show="filterValues.data.$resolved">
+                                <td class="list-group-item">
+                                    {{ item.name }}{{ item.unit }}
+                                    <span class="badge">
+                                        {{ item.number_of_products }}
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr ng-show="!filterValues.data.$resolved">
+                                <td>
+                                    <i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i>
+                                    <span class="sr-only">Laster...</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td class="text-center">
+                                    <div st-pagination="" st-items-by-page="5" st-displayed-pages="5"></div>
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </uib-accordion-group>
+            </uib-accordion>
+
+            <h4>
+                Tilpass resultat
+            </h4>
+
+            <uib-accordion close-others="false">
+                <uib-accordion-group is-open="isOpen" ng-repeat="(filterLabel, filterValues) in rangeFilters">
+                    <uib-accordion-heading>
+                        <div class="row">
+                            <div class="col-xs-12">
+                                {{ filterValues.title }}
+                                <i class="fa fa-minus fa-pull-right" ng-show="isOpen"></i>
+                                <i class="fa fa-plus fa-pull-right" ng-show="!isOpen"></i>
+                            </div>
+                        </div>
+                    </uib-accordion-heading>
+
+                    <div class="form">
+                        <div class="form-group">
+                            <div class="input-group">
+                                <input type="text" class="form-control" ng-model="filterValues.values[0]"
+                                       placeholder="Minimum" ng-keyup="$event.keyCode == 13 && updateRangeFilters()">
+                                <div class="input-group-addon">{{ filterValues.unit }}</div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="input-group">
+                                <input type="text" class="form-control" ng-model="filterValues.values[1]"
+                                       placeholder="Maksimum" ng-keyup="$event.keyCode == 13 && updateRangeFilters()">
+                                <div class="input-group-addon">{{ filterValues.unit }}</div>
+                            </div>
+                        </div>
                     </div>
                 </uib-accordion-group>
             </uib-accordion>
 
-            <div ng-show="!filters" class="margin-bottom margin-top">
-                <i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i>
-                <span class="sr-only">Laster...</span>
-            </div>
+            <button class="btn btn-default" ng-click="updateRangeFilters()">
+                Tilpass resultat
+            </button>
         </div>
 
         <!-- Items -->
         <div class="col-md-9 col-sm-12">
-            <div class="row">
+            <div class="row" ng-show="model.$resolved">
                 <div class="col-md-4 col-sm-6" ng-repeat="item in model.results" ng-show="model.count>0">
                     <div class="thumbnail item">
                         <div class="caption item-heading">
@@ -101,7 +160,11 @@
                             </small>
                             <div class="price">
                                 Pris: {{ item.price }},-<br/>
-                                (<span>{{ item.litre_price }},- pr. liter</span><span ng-if="item.alcohol_price !=  99999.90">, {{ item.alcohol_price }},- pr. %</span>)
+                                <span>{{ item.litre_price }},- pr. liter</span>
+                                <span ng-if="item.alcohol_price !=  99999.90">
+                                    <br />
+                                    {{ item.alcohol_price }},- pr. %
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -109,6 +172,12 @@
                 <div class="col-sm-12" ng-show="model.count==0">
                     Ingen varer samsvarer med dine valg
                 </div>
+            </div>
+
+            <!-- Loading -->
+            <div ng-show="!model.$resolved">
+                <i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i>
+                <span class="sr-only">Laster...</span>
             </div>
         </div>
     </div>
@@ -119,10 +188,4 @@
             <custom-pagination model="model" resource="resource" current-page="currentPage"></custom-pagination>
         </div>
     </div>
-</div>
-
-<!-- Loading -->
-<div ng-show="!model.$resolved">
-    <i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i>
-    <span class="sr-only">Laster...</span>
 </div>

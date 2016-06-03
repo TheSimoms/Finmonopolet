@@ -9,7 +9,6 @@ class Suits(models.Model):
     name = models.CharField(verbose_name='Suits name', max_length=255, unique=True, db_index=True)
 
 
-
 class Product(models.Model):
     product_number = models.IntegerField(verbose_name='Product ID', unique=True, db_index=True)
 
