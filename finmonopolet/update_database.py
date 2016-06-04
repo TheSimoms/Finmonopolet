@@ -1,4 +1,3 @@
-from product.models import Suits
 from store.models import StoreCategory
 
 
@@ -54,17 +53,3 @@ def read_store_category(value):
         category = StoreCategory.objects.create(category_number=category_number, name=category_name)
 
     return category
-
-
-def read_suits(value):
-    suits = []
-
-    for suit_name in value:
-        try:
-            suit = Suits.objects.get(name=suit_name)
-        except Suits.DoesNotExist:
-            suit = Suits.objects.create(name=suit_name)
-
-        suits.append(suit)
-
-    return suits

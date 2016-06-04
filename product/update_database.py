@@ -7,16 +7,18 @@ import logging
 import math
 import datetime
 
-from django.db.transaction import atomic
+from django.db import IntegrityError, transaction
 
 sys.path.append(os.path.abspath(os.path.join('/'.join(__file__.split('/')[:-1]), os.pardir)))
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'finmonopolet.settings')
 
 django.setup()
 
-from finmonopolet.update_database import read_string, read_float, read_integer, read_store_category, read_suits
+from finmonopolet.update_database import (
+    read_string, read_float, read_integer, read_store_category
+)
 
-from product.models import Product
+from product.models import Product, Suits, Country, Producer
 from category.models import Category
 
 
@@ -25,17 +27,54 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-def product_info_to_product(product_info):
-    category_name = read_string(product_info['Varetype'], True)
-
-    if category_name is None:
-        category_name = 'Uspesifisert'
+def read_category(value):
+    if value is None:
+        value = 'Uspesifisert'
 
     try:
-        category = Category.objects.get(name=category_name)
+        category = Category.objects.get(name=value)
     except Category.DoesNotExist:
-        category = Category.objects.create(name=category_name, canonical_name=category_name.lower())
+        category = Category.objects.create(name=value)
 
+    return category
+
+
+def read_suits(value):
+    suits = []
+
+    for suit_name in value:
+        try:
+            suit = Suits.objects.get(name=suit_name)
+        except Suits.DoesNotExist:
+            suit = Suits.objects.create(name=suit_name)
+
+        suits.append(suit)
+
+    return suits
+
+
+def read_country(value):
+    try:
+        country = Country.objects.get(name=value)
+    except Country.DoesNotExist:
+        country = Country.objects.create(name=value)
+
+    return country
+
+
+def read_producer(value):
+    if value is None:
+        value = 'Ukjent'
+
+    try:
+        producer = Producer.objects.get(name=value)
+    except Producer.DoesNotExist:
+        producer = Producer.objects.create(name=value)
+
+    return producer
+
+
+def product_info_to_product(product_info):
     litre_price = read_float(product_info['Literpris'])
     alcohol = read_float(product_info['Alkohol'])
 
@@ -64,11 +103,12 @@ def product_info_to_product(product_info):
 
     name = read_string(product_info['Varenavn'])
 
+    country = read_country(product_info['Land'])
+
     return {
         'product_number': read_integer(product_info['Varenummer']),
 
         'name': name,
-        'canonical_name': name.lower(),
 
         'url': read_string(product_info['Vareurl']),
 
@@ -77,7 +117,7 @@ def product_info_to_product(product_info):
         'litre_price': litre_price,
         'alcohol_price': alcohol_price,
 
-        'category': category,
+        'category': read_category(read_string(product_info['Varetype'], True)),
 
         'fullness': read_integer(product_info['Fylde'], True),
         'freshness': read_integer(product_info['Friskhet'], True),
@@ -89,7 +129,7 @@ def product_info_to_product(product_info):
         'smell': read_string(product_info['Lukt'], True),
         'taste': read_string(product_info['Smak'], True),
 
-        'country': product_info['Land'],
+        'country': country,
         'district': read_string(product_info['Distrikt'], True),
         'sub_district': read_string(product_info['Underdistrikt'], True),
 
@@ -104,7 +144,7 @@ def product_info_to_product(product_info):
 
         'storage': read_string(product_info['Lagringsgrad'], True),
 
-        'producer': read_string(product_info['Produsent'], True),
+        'producer': read_producer(read_string(product_info['Produsent'], True)),
         'wholesaler': read_string(product_info['Grossist'], True),
         'distributor': read_string(product_info['Distributor'], True),
 
@@ -117,7 +157,7 @@ def product_info_to_product(product_info):
     }, read_suits(suits_list)
 
 
-@atomic()
+@transaction.atomic()
 def update_products():
     """
     Fetch remote product database from vinmonopolet.no. Parse the data and update local database.
@@ -125,6 +165,7 @@ def update_products():
     logger.info('Starting product database update')
 
     with urllib.request.urlopen(
+            # FIXME: Change back when redirect is in place. http://www.vinmonopolet.no/api/produkter
             'https://www.vinmonopolet.no/medias/sys_master/products/products/hbc/hb0/8834253127710/produkter.csv'
     ) as f:
         f = f.read().decode('iso-8859-1').split('\r\n')
@@ -139,7 +180,11 @@ def update_products():
         i = 0
 
         for product_info in reader:
-            product_info, suits = product_info_to_product(product_info)
+            try:
+                with transaction.atomic():
+                    product_info, suits = product_info_to_product(product_info)
+            except IntegrityError:
+                continue
 
             try:
                 product = Product.objects.get(product_number=product_info['product_number'])

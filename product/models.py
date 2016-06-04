@@ -1,19 +1,25 @@
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 
+from finmonopolet.models import BaseModel
 from category.models import Category
 from store.models import StoreCategory
 
 
-class Suits(models.Model):
-    name = models.CharField(verbose_name='Suits name', max_length=255, unique=True, db_index=True)
+class Country(BaseModel):
+    pass
 
 
-class Product(models.Model):
+class Producer(BaseModel):
+    pass
+
+
+class Suits(BaseModel):
+    pass
+
+
+class Product(BaseModel):
     product_number = models.IntegerField(verbose_name='Product ID', unique=True, db_index=True)
-
-    name = models.CharField(verbose_name='Product name', max_length=255, db_index=True)
-    canonical_name = models.CharField(verbose_name='Canonical product name', max_length=255, db_index=True)
 
     url = models.URLField(verbose_name='Product URL')
 
@@ -48,7 +54,9 @@ class Product(models.Model):
     smell = models.TextField(verbose_name='Smell description', blank=True, null=True)
     taste = models.TextField(verbose_name='Taste description', blank=True, null=True)
 
-    country = models.CharField(verbose_name='Country of origin', max_length=255, db_index=True)
+    country = models.ForeignKey(
+        Country, verbose_name='Country of origin', on_delete=models.CASCADE, related_name='products', db_index=True
+    )
     district = models.CharField(verbose_name='District of origin', max_length=255, blank=True, null=True)
     sub_district = models.CharField(verbose_name='Sub district of origin', max_length=255, blank=True, null=True)
 
@@ -67,7 +75,10 @@ class Product(models.Model):
 
     storage = models.TextField(verbose_name='How to store product', blank=True, null=True)
 
-    producer = models.CharField(verbose_name='Producer', max_length=255, blank=True, null=True, db_index=True)
+    producer = models.ForeignKey(
+        Producer, verbose_name='Producer', on_delete=models.CASCADE, related_name='products',
+        blank=True, null=True, db_index=True
+    )
     wholesaler = models.CharField(verbose_name='Wholesaler', max_length=255, blank=True, null=True)
     distributor = models.CharField(verbose_name='Distributor', max_length=255, blank=True, null=True)
 
@@ -88,4 +99,4 @@ class Product(models.Model):
         ordering = ('canonical_name', 'volume', )
 
     def __str__(self):
-        return '%s %f%% (%f)' % (self.name, float(self.alcohol), float(self.volume))
+        return '%s %.2f%% (%.2fl)' % (self.name, float(self.alcohol), float(self.volume))

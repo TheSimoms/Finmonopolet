@@ -1,24 +1,23 @@
 import rest_framework_filters as filters
 
+from django_filters.fields import Lookup
+
 from rest_framework import serializers, viewsets
 
-from finmonopolet.api import SharedAPIRootRouter
-from category.api import CategorySerializer
+from finmonopolet.api import SharedAPIRootRouter, ForeignKeyViewSet, ForeignKeySerializer
 from store.api import StoreCategorySerializer
 
-from product.models import Product, Suits
-
-
-class SuitsSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Suits
-        fields = ('id', 'name', )
+from product.models import Product
 
 
 class ProductSerializer(serializers.ModelSerializer):
-    category = CategorySerializer()
+    category = ForeignKeySerializer()
+    country = ForeignKeySerializer()
+    producer = ForeignKeySerializer()
+
     store_category = StoreCategorySerializer()
-    suits = serializers.ListSerializer(child=SuitsSerializer())
+
+    suits = serializers.ListSerializer(child=ForeignKeySerializer())
 
     class Meta:
         model = Product
@@ -28,32 +27,33 @@ class ProductSerializer(serializers.ModelSerializer):
 class ProductListSerializer(ProductSerializer):
     class Meta(ProductSerializer.Meta):
         fields = (
-            'id', 'name', 'category', 'country', 'producer', 'volume', 'alcohol', 'price', 'litre_price',
-            'alcohol_price',
+            'id', 'name', 'category', 'country', 'producer', 'suits', 'volume', 'alcohol', 'price', 'litre_price',
+            'alcohol_price'
         )
 
 
-class SuitsFilter(filters.FilterSet):
-    id = filters.AllLookupsFilter(name='id')
-
-    class Meta:
-        model = Suits
-        fields = ('id', )
+class ListFilter(filters.Filter):
+    def filter(self, queryset, value):
+        return super(ListFilter, self).filter(queryset, Lookup(value.split(u','), 'in')).distinct()
 
 
 class ProductFilter(filters.FilterSet):
+    category = ListFilter(name='category')
+    country = ListFilter(name='country')
+    producer = ListFilter(name='producer')
+    store_category = ListFilter(name='store_category')
+    suits = ListFilter(name='suits')
+
     volume = filters.AllLookupsFilter(name='volume')
     alcohol = filters.AllLookupsFilter(name='alcohol')
     price = filters.AllLookupsFilter(name='price')
     litre_price = filters.AllLookupsFilter(name='litre_price')
     alcohol_price = filters.AllLookupsFilter(name='alcohol_price')
 
-    suits = filters.RelatedFilter(SuitsFilter, name='suits')
-
     class Meta:
         model = Product
         fields = (
-            'category', 'country', 'producer', 'store_category', 'suits', 'alcohol', 'volume', 'price',
+            'category', 'country', 'producer', 'store_category', 'suits', 'volume', 'alcohol', 'price',
             'litre_price', 'alcohol_price',
         )
 
@@ -68,7 +68,8 @@ class ProductViewSet(viewsets.ReadOnlyModelViewSet):
         'alcohol_price',
     )
     search_fields = (
-        'canonical_name', 'category__canonical_name', 'vintage', 'country', 'producer', 'feedstock', 'wholesaler',
+        'canonical_name', 'category__canonical_name', 'vintage', 'country__canonical_name', 'producer__canonical_name',
+        'feedstock', 'wholesaler',
     )
 
     def get_serializer_class(self):
@@ -80,4 +81,8 @@ class ProductViewSet(viewsets.ReadOnlyModelViewSet):
             return ProductSerializer
 
 
-SharedAPIRootRouter().register(r'products', ProductViewSet)
+SharedAPIRootRouter().register(r'products', ProductViewSet, base_name='products')
+
+SharedAPIRootRouter().register(r'countries', ForeignKeyViewSet, base_name='countries')
+SharedAPIRootRouter().register(r'producers', ForeignKeyViewSet, base_name='producers')
+SharedAPIRootRouter().register(r'suits', ForeignKeyViewSet, base_name='suits')

@@ -3,21 +3,21 @@ import jsonfield
 from django.db import models
 from django.core.validators import MinLengthValidator, MaxLengthValidator, MinValueValidator, MaxValueValidator
 
+from finmonopolet.models import BaseModel
 
-class StoreCategory(models.Model):
+
+class StoreCategory(BaseModel):
     category_number = models.IntegerField(
         verbose_name='Category number', validators=[MinValueValidator(0), MaxValueValidator(7)], unique=True,
         db_index=True
     )
-    name = models.CharField(verbose_name='Category name', max_length=255, unique=True, db_index=True)
 
     class Meta:
-        ordering = ('category_number', 'name', )
+        # FIXME: Use BaseModel fields + override
+        ordering = ('category_number', 'canonical_name', )
 
 
-class Store(models.Model):
-    name = models.CharField(verbose_name='Store name', max_length=255, unique=True, db_index=True)
-
+class Store(BaseModel):
     last_updated = models.DateTimeField(verbose_name='Last updated', auto_now=True)
 
     address = models.CharField(verbose_name='Store address', max_length=255, db_index=True)
@@ -33,9 +33,3 @@ class Store(models.Model):
 
     opening_times = jsonfield.JSONField()
     opening_times_next = jsonfield.JSONField()
-
-    class Meta:
-        ordering = ('name', )
-
-    def __str__(self):
-        return '%s' % self.name

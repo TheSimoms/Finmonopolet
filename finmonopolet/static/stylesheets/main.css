@@ -50,3 +50,23 @@
 }
 
 .angular-google-map-container { height: 600px; width: 400px; }
+
+.filter-list-container {
+    margin-top: -15px;
+    margin-bottom: -35px;
+
+    border: 0;
+}
+.filter-list-container .list-group {
+    max-height: 300px;
+
+    padding-bottom: 5px;
+
+    overflow-y: auto;
+}
+.filter-list-container .list-group .list-group-item {
+    border-left: 0;
+    border-right: 0;
+
+    overflow-x: auto;
+}

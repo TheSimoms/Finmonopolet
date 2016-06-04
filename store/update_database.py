@@ -71,6 +71,7 @@ def update_stores():
     logger.info('Starting store database update')
 
     with urllib.request.urlopen(
+            # FIXME: Change back when redirect is in place. http://www.vinmonopolet.no/api/butikker
             'https://www.vinmonopolet.no/medias/sys_master/locations/locations/h3c/h4a/8834253946910.csv'
     ) as f:
         f = f.read().decode('iso-8859-1').split('\r\n')

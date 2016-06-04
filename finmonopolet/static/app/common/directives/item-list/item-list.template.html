@@ -1,191 +1,186 @@
-<div>
-    <!-- Filtering -->
-    <div class="row margin-bottom">
-        <!-- Search -->
-        <div class="col-md-offset-3 col-md-3 col-sm-6">
-            <form ng-submit="search(searchString)">
-                <div class="input-group">
-                    <input type="text" class="form-control" ng-model="searchString" placeholder="Søk...">
-                    <span class="input-group-btn">
-                        <button class="btn btn-default" type="button" ng-click="search(searchString)">
-                            <i class="fa fa-search"></i>
-                        </button>
-                    </span>
-                </div>
-            </form>
-        </div>
+<h2 ng-if="title" ng-bind="title"></h2>
 
-        <!-- Ordering -->
-        <div class="col-md-3 col-sm-6">
-            <form>
-                <div class="input-group">
-                    <select id="ordering" class="form-control"
-                            ng-options="key as label for (key, label) in orderingFields"
-                            ng-model="ordering.field">
-                    </select>
-                    <span class="input-group-btn">
-                        <button class="btn btn-default" type="button"
-                                ng-click="ordering.ascending = !ordering.ascending">
-                            <i class="fa fa-arrow-up" ng-show="ordering.ascending"></i>
-                            <i class="fa fa-arrow-down" ng-show="!ordering.ascending"></i>
-                        </button>
-                    </span>
+<!-- Filtering -->
+<div class="row margin-bottom">
+    <!-- Search -->
+    <div class="col-md-offset-3 col-md-3 col-sm-6">
+        <form ng-submit="search(searchString)">
+            <div class="input-group">
+                <input type="text" class="form-control" ng-model="searchString" placeholder="Søk...">
+                <span class="input-group-btn">
+                    <button class="btn btn-default" type="button" ng-click="search(searchString)">
+                        <i class="fa fa-search"></i>
+                    </button>
+                </span>
+            </div>
+        </form>
+    </div>
+
+    <!-- Ordering -->
+    <div class="col-md-3 col-sm-6">
+        <form>
+            <div class="input-group">
+                <select id="ordering" class="form-control"
+                        ng-options="key as label for (key, label) in orderingFields"
+                        ng-model="ordering.field">
+                </select>
+                <span class="input-group-btn">
+                    <button class="btn btn-default" type="button"
+                            ng-click="ordering.ascending = !ordering.ascending">
+                        <i class="fa fa-arrow-up" ng-show="ordering.ascending"></i>
+                        <i class="fa fa-arrow-down" ng-show="!ordering.ascending"></i>
+                    </button>
+                </span>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Items -->
+<div class="row">
+    <!-- Filtering -->
+    <div class="col-md-3 col-sm-12">
+        <h4>
+            Filtrér resultat
+        </h4>
+
+        <uib-accordion close-others="false">
+            <uib-accordion-group is-open="isOpen" ng-repeat="(filterLabel, filterValues) in filters">
+                <uib-accordion-heading>
+                    <div class="row">
+                        <div class="col-xs-12">
+                            {{ filterValues.title }}
+                            <i class="fa fa-minus fa-pull-right" ng-show="isOpen"></i>
+                            <i class="fa fa-plus fa-pull-right" ng-show="!isOpen"></i>
+                        </div>
+                    </div>
+                </uib-accordion-heading>
+
+                <div class="row filter-list-container">
+                    <div class="list-group">
+                        <!-- Item list -->
+                        <a class="list-group-item"
+                           ng-repeat="item in filterValues.data"
+                           ng-show="filterValues.data.$resolved"
+                           ng-click="selectFilter(filterValues, item)" role="button">
+                            {{ item.name }}
+                            <span class="badge" ng-show="filterValues.selected.indexOf(item) < 0">
+                                {{ item.number_of_products }}
+                            </span>
+                            <span class="badge" ng-show="filterValues.selected.indexOf(item) >= 0">
+                                <i class="fa fa-times"></i>
+                            </span>
+                        </a>
+
+                        <a class="list-group-item" ng-show="!filterValues.data.$resolved">
+                            <i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i>
+                            <span class="sr-only">Laster...</span>
+                        </a>
+                    </div>
                 </div>
-            </form>
+            </uib-accordion-group>
+        </uib-accordion>
+
+        <h4>
+            Tilpass resultat
+        </h4>
+
+        <uib-accordion close-others="false">
+            <uib-accordion-group is-open="isOpen" ng-repeat="(filterLabel, filterValues) in rangeFilters">
+                <uib-accordion-heading>
+                    <div class="row">
+                        <div class="col-xs-12">
+                            {{ filterValues.title }}
+                            <i class="fa fa-minus fa-pull-right" ng-show="isOpen"></i>
+                            <i class="fa fa-plus fa-pull-right" ng-show="!isOpen"></i>
+                        </div>
+                    </div>
+                </uib-accordion-heading>
+
+                <div class="form">
+                    <div class="form-group">
+                        <div class="input-group">
+                            <input type="text" class="form-control" ng-model="filterValues.values[0]"
+                                   placeholder="Minimum" ng-keyup="$event.keyCode == 13 && updateRangeFilters()">
+                            <div class="input-group-addon">{{ filterValues.unit }}</div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="input-group">
+                            <input type="text" class="form-control" ng-model="filterValues.values[1]"
+                                   placeholder="Maksimum" ng-keyup="$event.keyCode == 13 && updateRangeFilters()">
+                            <div class="input-group-addon">{{ filterValues.unit }}</div>
+                        </div>
+                    </div>
+                </div>
+            </uib-accordion-group>
+        </uib-accordion>
+
+        <div class="margin-bottom">
+            <button class="btn btn-primary" ng-click="updateRangeFilters()">
+                Tilpass resultat
+            </button>
+
+            <button class="btn btn-default" ng-click="clearRangeFilters()">
+                Tilbakestill resultat
+            </button>
         </div>
     </div>
 
     <!-- Items -->
-    <div class="row">
-        <!-- Filtering -->
-        <div class="col-md-3 col-sm-12">
-            <h4>
-                Filtrér resultat
-            </h4>
-
-            <uib-accordion close-others="false">
-                <uib-accordion-group is-open="isOpen" ng-repeat="(filterLabel, filterValues) in filters">
-                    <uib-accordion-heading>
-                        <div class="row">
-                            <div class="col-xs-12">
-                                {{ filterValues.title }}
-                                <i class="fa fa-minus fa-pull-right" ng-show="isOpen"></i>
-                                <i class="fa fa-plus fa-pull-right" ng-show="!isOpen"></i>
-                            </div>
-                        </div>
-                    </uib-accordion-heading>
-
-                    <table st-table="filterValues.displayData" st-safe-src="filterValues.data"
-                           class="col-xs-12">
-                        <thead>
-                            <tr>
-                                <th>
-                                    <input st-search="" class="form-control" placeholder="Søk..." type="text"/><br />
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr ng-repeat="item in filterValues.displayData" ng-show="filterValues.data.$resolved">
-                                <td class="list-group-item">
-                                    {{ item.name }}{{ item.unit }}
-                                    <span class="badge">
-                                        {{ item.number_of_products }}
-                                    </span>
-                                </td>
-                            </tr>
-                            <tr ng-show="!filterValues.data.$resolved">
-                                <td>
-                                    <i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i>
-                                    <span class="sr-only">Laster...</span>
-                                </td>
-                            </tr>
-                        </tbody>
-                        <tfoot>
-                            <tr>
-                                <td class="text-center">
-                                    <div st-pagination="" st-items-by-page="5" st-displayed-pages="5"></div>
-                                </td>
-                            </tr>
-                        </tfoot>
-                    </table>
-                </uib-accordion-group>
-            </uib-accordion>
-
-            <h4>
-                Tilpass resultat
-            </h4>
-
-            <uib-accordion close-others="false">
-                <uib-accordion-group is-open="isOpen" ng-repeat="(filterLabel, filterValues) in rangeFilters">
-                    <uib-accordion-heading>
-                        <div class="row">
-                            <div class="col-xs-12">
-                                {{ filterValues.title }}
-                                <i class="fa fa-minus fa-pull-right" ng-show="isOpen"></i>
-                                <i class="fa fa-plus fa-pull-right" ng-show="!isOpen"></i>
-                            </div>
-                        </div>
-                    </uib-accordion-heading>
-
-                    <div class="form">
-                        <div class="form-group">
-                            <div class="input-group">
-                                <input type="text" class="form-control" ng-model="filterValues.values[0]"
-                                       placeholder="Minimum" ng-keyup="$event.keyCode == 13 && updateRangeFilters()">
-                                <div class="input-group-addon">{{ filterValues.unit }}</div>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <div class="input-group">
-                                <input type="text" class="form-control" ng-model="filterValues.values[1]"
-                                       placeholder="Maksimum" ng-keyup="$event.keyCode == 13 && updateRangeFilters()">
-                                <div class="input-group-addon">{{ filterValues.unit }}</div>
-                            </div>
+    <div class="col-md-9 col-sm-12">
+        <div class="row" ng-show="model.$resolved">
+            <div class="col-md-4 col-sm-6" ng-repeat="item in model.results" ng-show="model.count>0">
+                <div class="thumbnail item">
+                    <div class="caption item-heading">
+                        <h4>
+                            <a ui-sref="assortment.product({productId: item.id})">
+                                {{ item.name }}
+                            </a>
+                        </h4>
+                        <a ui-sref="assortment.category({categoryId: item.category.id})">
+                            <span>{{ item.category.name }}</span>
+                        </a>
+                        ({{ item.country.name }})<br />
+                        <span ng-if="item.producer">
+                            {{ item.producer.name }}
+                        </span>
+                        <span ng-if="!item.producer">
+                            Produsent ikke oppgitt
+                        </span>
+                    </div>
+                    <div class="caption item-meta">
+                        <small>
+                            {{ item.alcohol }} %<br />
+                            Volum: {{ item.volume }} l
+                        </small>
+                        <div class="price">
+                            Pris: {{ item.price }},-<br/>
+                            <span>{{ item.litre_price }},- pr. liter</span>
+                            <span ng-if="item.alcohol_price !=  99999.90">
+                                <br />
+                                {{ item.alcohol_price }},- pr. %
+                            </span>
                         </div>
                     </div>
-                </uib-accordion-group>
-            </uib-accordion>
-
-            <button class="btn btn-default" ng-click="updateRangeFilters()">
-                Tilpass resultat
-            </button>
+                </div>
+            </div>
+            <div class="col-sm-12" ng-show="model.count==0">
+                Ingen varer samsvarer med dine valg
+            </div>
         </div>
 
-        <!-- Items -->
-        <div class="col-md-9 col-sm-12">
-            <div class="row" ng-show="model.$resolved">
-                <div class="col-md-4 col-sm-6" ng-repeat="item in model.results" ng-show="model.count>0">
-                    <div class="thumbnail item">
-                        <div class="caption item-heading">
-                            <h4>
-                                <a ui-sref="assortment.product({productId: item.id})">
-                                    {{ item.name }}
-                                </a>
-                            </h4>
-                            <a ui-sref="assortment.category({categoryId: item.category.id})">
-                                <span>{{ item.category.name }}</span>
-                            </a>
-                            ({{ item.country }})<br />
-                            <span ng-if="item.producer">
-                                {{ item.producer }}
-                            </span>
-                            <span ng-if="!item.producer">
-                                Produsent ikke oppgitt
-                            </span>
-                        </div>
-                        <div class="caption item-meta">
-                            <small>
-                                {{ item.alcohol }} %<br />
-                                Volum: {{ item.volume }} l
-                            </small>
-                            <div class="price">
-                                Pris: {{ item.price }},-<br/>
-                                <span>{{ item.litre_price }},- pr. liter</span>
-                                <span ng-if="item.alcohol_price !=  99999.90">
-                                    <br />
-                                    {{ item.alcohol_price }},- pr. %
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-sm-12" ng-show="model.count==0">
-                    Ingen varer samsvarer med dine valg
-                </div>
-            </div>
-
-            <!-- Loading -->
-            <div ng-show="!model.$resolved">
-                <i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i>
-                <span class="sr-only">Laster...</span>
-            </div>
+        <!-- Loading -->
+        <div ng-show="!model.$resolved" class="text-center margin-top">
+            <i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i>
+            <span class="sr-only">Laster...</span>
         </div>
     </div>
+</div>
 
-    <!-- Pagination -->
-    <div class="row">
-        <div class="col-md-offset-3 col-md-9 col-sm-12">
-            <custom-pagination model="model" resource="resource" current-page="currentPage"></custom-pagination>
-        </div>
+<!-- Pagination -->
+<div class="row">
+    <div class="col-md-offset-3 col-md-9 col-sm-12">
+        <custom-pagination model="model" resource="resource" current-page="currentPage"></custom-pagination>
     </div>
 </div>

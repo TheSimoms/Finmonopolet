@@ -37,31 +37,22 @@ app.config(
             })
             .state('assortment.list', {
                 url: '',
-                template: '<item-list model="products" resource="productResource"></item-list>',
-                controller: function ($scope, Product, products) {
-                    $scope.products = products;
-                    $scope.productResource = Product;
-                },
-                resolve: {
-                    products: function (Product) {
-                        return Product.get();
-                    }
-                },
+                templateUrl: 'static/app/assortment/assortment.details.view.html',
                 ncyBreadcrumb: {
                     label: 'Vareutvalg'
                 }
             })
             .state('assortment.category', {
                 url: '/varegrupper/{categoryId:int}',
-                templateUrl: 'static/app/assortment/category/category.details.view.html',
-                controller: 'CategoryDetailCtrl',
-                resolve: {
-                    category: function ($stateParams, Category) {
-                        return Category.get({id: $stateParams['categoryId']});
-                    },
-                    products: function ($stateParams, Product) {
-                        return Product.get({category: $stateParams['categoryId']});
-                    }
+                templateUrl: 'static/app/assortment/assortment.details.view.html',
+                controller: function ($scope, $stateParams, Category) {
+                    $scope.filters = {
+                        category: $stateParams.categoryId
+                    };
+
+                    $scope.category = Category.get({ id: $stateParams.categoryId }, function (category) {
+                        $scope.title = category.name;
+                    });
                 },
                 ncyBreadcrumb: {
                     parent: 'assortment.list',
@@ -71,15 +62,13 @@ app.config(
             .state('assortment.product', {
                 url: '/varer/{productId:int}',
                 templateUrl: 'static/app/assortment/product/product.details.view.html',
-                controller: 'ProductDetailCtrl',
-                resolve: {
-                    product: function ($stateParams, Product) {
-                        return Product.get({id: $stateParams['productId']});
-                    }
+                controller: function ($scope, $stateParams, Product) {
+                    $scope.product = Product.get({ id: $stateParams.productId }, function (product) {
+                        $scope.category = product.category;
+                    });
                 },
                 ncyBreadcrumb: {
-                    // FIXME: Add category as parent
-                    parent: 'assortment.list',
+                    parent: 'assortment.category',
                     label: '{{ product.name }}'
                 }
             })

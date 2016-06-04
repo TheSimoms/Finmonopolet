@@ -1,17 +1,18 @@
-app.directive('itemList', function ($q, $timeout, Category) {
+app.directive('itemList', function ($q, $timeout, Product, Category, Country, Producer, Suits) {
     return {
         restrict: 'E',
         scope: {
-            model: '=',
-            resource: '=',
+            title: '=?',
             lockedFilters: '=?',
             itemsPerPage: '=?'
         },
         templateUrl: 'static/app/common/directives/item-list/item-list.template.html',
         link: function ($scope) {
-            $scope.itemsPerPage = $scope.itemsPerPage || 12;
+            $scope.resource = Product;
+
             $scope.filtering = $scope.lockedFilters || {};
 
+            $scope.itemsPerPage = $scope.itemsPerPage || 12;
             $scope.currentPage = 1;
 
             $scope.ordering = {
@@ -25,6 +26,8 @@ app.directive('itemList', function ($q, $timeout, Category) {
                 page: 1
             });
 
+            $scope.model = $scope.resource.get($scope.filtering);
+
             $scope.orderingFields = {
                 'canonical_name': 'Navn',
                 'category': 'Varegruppe',
@@ -37,33 +40,24 @@ app.directive('itemList', function ($q, $timeout, Category) {
                 'alcohol_price': 'Pris pr. %'
             };
 
-            $scope.filtersResources = {
-                category: Category.query()
-            };
-
             $scope.filters = {
                 category: {
-                    title: 'Varegruppe', filter_name: 'category', unit: '',
-                    type: 'list', displayData: []
+                    title: 'Varegruppe', filter_name: 'category', type: 'unique',
+                    data: Category.query(), selected: []
                 },
                 country: {
-                    title: 'Land', filter_name: 'country', unit: '', type: 'list'
+                    title: 'Land', filter_name: 'country', type: 'unique',
+                    data: Country.query(), selected: []
                 },
                 producer: {
-                    title: 'Produsent', filter_name: 'producer', unit: '', type: 'list'
+                    title: 'Produsent', filter_name: 'producer', type: 'unique',
+                    data: Producer.query(), selected: []
                 },
                 suits: {
-                    title: 'Passer til', filter_name: 'suits__id__in', unit: '', type: 'list'
+                    title: 'Passer til', filter_name: 'suits', type: 'unique',
+                    data: Suits.query(), selected: []
                 }
             };
-
-            for (var filterLabel in $scope.filtersResources) {
-                if ($scope.filtersResources.hasOwnProperty(filterLabel)) {
-                    $scope.filtersResources[filterLabel].$promise.then(function (data) {
-                        $scope.filters[filterLabel].data = data;
-                    });
-                }
-            }
 
             $scope.rangeFilters = {
                 price: {
@@ -78,11 +72,11 @@ app.directive('itemList', function ($q, $timeout, Category) {
                     title: 'Alkoholinnhold',  unit: ' %',
                     type: 'range', values: [null, null]
                 },
-                price_per_litre: {
+                litre_price: {
                     title: 'Pris pr. liter',  unit: ',- pr. l',
                     type: 'range', values: [null, null]
                 },
-                price_per_alcohol: {
+                alcohol_price: {
                     title: 'Pris pr. %',  unit: ',- pr. %',
                     type: 'range', values: [null, null]
                 }
@@ -90,6 +84,24 @@ app.directive('itemList', function ($q, $timeout, Category) {
 
             $scope.search = function (search) {
                 $scope.filtering.search = search.toLowerCase();
+            };
+
+            $scope.selectFilter = function (filterValues, item) {
+                var index = filterValues.selected.indexOf(item);
+
+                if (index >= 0) {
+                    filterValues.selected.splice(index, 1);
+                } else {
+                    filterValues.selected.push(item);
+                }
+
+                if (filterValues.selected.length == 0) {
+                    delete $scope.filtering[filterValues.filter_name];
+                } else {
+                    $scope.filtering[filterValues.filter_name] = filterValues.selected.map(function (item) {
+                        return item.id;
+                    }).join();
+                }
             };
 
             $scope.updateRangeFilters = function () {
@@ -112,15 +124,29 @@ app.directive('itemList', function ($q, $timeout, Category) {
                         }
                     }
 
+                    for (var oldFilterLabel in $scope.filtering) {
+                        if ($scope.filtering.hasOwnProperty(oldFilterLabel) && oldFilterLabel.startsWith(filterLabel)) {
+                            delete $scope.filtering[oldFilterLabel];
+
+                            break;
+                        }
+                    }
+
                     if (typeof queryValue !== 'undefined') {
                         $scope.filtering[queryString] = queryValue;
                     }
+                });
+            };
+
+            $scope.clearRangeFilters = function () {
+                angular.forEach($scope.rangeFilters, function (filter, filterLabel) {
+                    filter.values = [null, null];
 
                     for (var oldFilterLabel in $scope.filtering) {
-                        if ($scope.filtering.hasOwnProperty(oldFilterLabel)) {
-                            if (oldFilterLabel.startsWith(filterLabel) && oldFilterLabel != queryString) {
-                                delete $scope.filtering[oldFilterLabel];
-                            }
+                        if ($scope.filtering.hasOwnProperty(oldFilterLabel) && oldFilterLabel.startsWith(filterLabel)) {
+                            delete $scope.filtering[oldFilterLabel];
+
+                            break;
                         }
                     }
                 });
