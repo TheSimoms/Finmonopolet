@@ -2,8 +2,11 @@ from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 
 from finmonopolet.models import BaseModel
-from category.models import Category
 from store.models import StoreCategory
+
+
+class Category(BaseModel):
+    pass
 
 
 class Country(BaseModel):

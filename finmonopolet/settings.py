@@ -43,7 +43,6 @@ INSTALLED_APPS = [
 
     'finmonopolet',
     'product',
-    'category',
     'statistic',
     'store',
 ]

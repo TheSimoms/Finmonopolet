@@ -3,8 +3,7 @@ from django.shortcuts import get_object_or_404
 
 from rest_framework import serializers, viewsets, routers, response
 
-from product.models import Country, Producer, Suits
-from category.models import Category
+from product.models import Category, Country, Producer, Suits
 
 
 class SharedAPIRootRouter(routers.SimpleRouter):

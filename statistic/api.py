@@ -5,8 +5,7 @@ from rest_framework.response import Response
 
 from finmonopolet.api import SharedAPIRootRouter
 
-from product.models import Product
-from category.models import Category
+from product.models import Product, Category
 
 
 class ProductStatisticViewSet(viewsets.ViewSet):
@@ -17,8 +16,7 @@ class ProductStatisticViewSet(viewsets.ViewSet):
             filters[key] = value.split(',')[0]
 
         products = Product.objects.filter(**filters).values(
-            'name', 'country', 'district', 'sub_district', 'producer', 'price', 'volume', 'alcohol', 'litre_price',
-            'alcohol_price', 'vintage',
+            'country', 'producer', 'price', 'volume', 'alcohol', 'litre_price', 'alcohol_price', 'vintage',
         )
 
         ordered_by_price = products.order_by('price')
@@ -37,28 +35,35 @@ class ProductStatisticViewSet(viewsets.ViewSet):
             'number_of_countries': product_statistics['country__count'],
             'number_of_producers': product_statistics['producer__count'],
 
-            'min_price': ordered_by_price.first(),
-            'max_price': ordered_by_price.last(),
-            'average_price': product_statistics['price__avg'],
-
-            'min_volume': ordered_by_volume.first(),
-            'max_volume': ordered_by_volume.last(),
-            'average_volume': product_statistics['volume__avg'],
-
-            'min_alcohol_level': ordered_by_alcohol_level.first(),
-            'max_alcohol_level': ordered_by_alcohol_level.last(),
-            'average_alcohol_level': product_statistics['alcohol__avg'],
-
-            'min_litre_price': ordered_by_litre_price.first(),
-            'max_litre_price': ordered_by_litre_price.last(),
-            'average_litre_price': product_statistics['litre_price__avg'],
-
-            'min_alcohol_price': ordered_by_alcohol_price.first(),
-            'max_alcohol_price': ordered_by_alcohol_price.last(),
-            'average_alcohol_price': product_statistics['alcohol_price__avg'],
-
-            'max_vintage': ordered_by_vintage.last(),
-            'average_vintage': product_statistics['vintage__avg']
+            'price': {
+                'min': ordered_by_price.first(),
+                'max': ordered_by_price.last(),
+                'average': product_statistics['price__avg'],
+            },
+            'volume': {
+                'min': ordered_by_volume.first(),
+                'max': ordered_by_volume.last(),
+                'average': product_statistics['volume__avg'],
+            },
+            'alcohol': {
+                'min': ordered_by_alcohol_level.first(),
+                'max': ordered_by_alcohol_level.last(),
+                'average': product_statistics['alcohol__avg'],
+            },
+            'litre_price': {
+                'min': ordered_by_litre_price.first(),
+                'max': ordered_by_litre_price.last(),
+                'average': product_statistics['litre_price__avg'],
+            },
+            'alcohol_price': {
+                'min': ordered_by_alcohol_price.first(),
+                'max': ordered_by_alcohol_price.last(),
+                'average': product_statistics['alcohol_price__avg'],
+            },
+            'vintage': {
+                'max': ordered_by_vintage.last(),
+                'average': product_statistics['vintage__avg']
+            }
         }
 
         if 'category' not in filters:
@@ -77,15 +82,20 @@ class ProductStatisticViewSet(viewsets.ViewSet):
                     'name': category.name,
                     'number_of_items': category_statistics['id__count'],
 
-                    'max_price': category_statistics['price__max'],
-                    'total_price': category_statistics['price__sum'],
-
-                    'max_volume': category_statistics['volume__max'],
-                    'total_volume': category_statistics['volume__sum'],
-
-                    'max_litre_price': category_statistics['litre_price__max'],
-
-                    'max_alcohol_price': category_statistics['alcohol_price__max'],
+                    'price': {
+                        'max': category_statistics['price__max'],
+                        'total': category_statistics['price__sum'],
+                    },
+                    'volume': {
+                        'max': category_statistics['volume__max'],
+                        'total': category_statistics['volume__sum'],
+                    },
+                    'litre_price': {
+                        'max': category_statistics['litre_price__max'],
+                    },
+                    'alcohol_price': {
+                        'max': category_statistics['alcohol_price__max'],
+                    },
                 }
 
                 categories[category.id] = category_data

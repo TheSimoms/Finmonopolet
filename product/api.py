@@ -83,6 +83,7 @@ class ProductViewSet(viewsets.ReadOnlyModelViewSet):
 
 SharedAPIRootRouter().register(r'products', ProductViewSet, base_name='products')
 
+SharedAPIRootRouter().register(r'categories', ForeignKeyViewSet, base_name='categories')
 SharedAPIRootRouter().register(r'countries', ForeignKeyViewSet, base_name='countries')
 SharedAPIRootRouter().register(r'producers', ForeignKeyViewSet, base_name='producers')
 SharedAPIRootRouter().register(r'suits', ForeignKeyViewSet, base_name='suits')

@@ -18,8 +18,7 @@ from finmonopolet.update_database import (
     read_string, read_float, read_integer, read_store_category
 )
 
-from product.models import Product, Suits, Country, Producer
-from category.models import Category
+from product.models import Product, Category, Country, Producer, Suits
 
 
 logging.basicConfig(level=logging.INFO)
