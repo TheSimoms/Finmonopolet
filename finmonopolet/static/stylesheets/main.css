@@ -13,6 +13,19 @@
     margin-right: 20px;
 }
 
+.margin-top-small {
+    margin-top: 5px;
+}
+.margin-left-small {
+    margin-left: 5px;
+}
+.margin-bottom-small {
+    margin-bottom: 5px;
+}
+.margin-right-small {
+    margin-right: 5px;
+}
+
 .interact {
     cursor: pointer;
 }

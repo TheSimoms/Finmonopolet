@@ -40,6 +40,19 @@
 <div class="row">
     <!-- Filtering -->
     <div class="col-md-3 col-sm-12">
+        <!-- Selected filters -->
+        <div class="list-group">
+            <div ng-repeat="filter in filters">
+                <a class="list-group-item interact" ng-repeat="item in filter.selected"
+                     ng-click="selectFilter(filter, item)">
+                    {{ filter.title }}: {{ item.name }}
+                    <span class="badge">
+                        <i class="fa fa-times pull-right"></i>
+                    </span>
+                </a>
+            </div>
+        </div>
+
         <h4>
             Filtrér resultat
         </h4>
@@ -161,9 +174,10 @@
                         <div class="price">
                             Pris: {{ item.price }},-<br/>
                             <span>{{ item.litre_price }},- pr. liter</span>
-                            <span ng-if="item.alcohol_price !=  99999.90">
+                            <span>
                                 <br />
-                                {{ item.alcohol_price }},- pr. %
+                                <span ng-if="item.alcohol_price <  99999.90">{{ item.alcohol_price }},- pr. %</span>
+                                <span ng-if="item.alcohol_price >=  99999.90">∞,- pr. %</span>
                             </span>
                         </div>
                     </div>
