@@ -42,20 +42,16 @@ app.directive('itemList', function ($q, $timeout, Product, Category, Country, Pr
 
             $scope.filters = {
                 category: {
-                    title: 'Varegruppe', filter_name: 'category', type: 'unique',
-                    data: Category.query(), selected: []
+                    title: 'Varegruppe', filter_name: 'category', resource: Category, data: [], selected: []
                 },
                 country: {
-                    title: 'Land', filter_name: 'country', type: 'unique',
-                    data: Country.query(), selected: []
+                    title: 'Land', filter_name: 'country', resource: Country, data: [], selected: []
                 },
                 producer: {
-                    title: 'Produsent', filter_name: 'producer', type: 'unique',
-                    data: Producer.query(), selected: []
+                    title: 'Produsent', filter_name: 'producer', resource: Producer, data: [], selected: []
                 },
                 suits: {
-                    title: 'Passer til', filter_name: 'suits', type: 'unique',
-                    data: Suits.query(), selected: []
+                    title: 'Passer til', filter_name: 'suits', resource: Suits, data: [], selected: []
                 }
             };
 

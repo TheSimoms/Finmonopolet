@@ -5,11 +5,15 @@ app.directive('customPagination', function () {
             model: '=',
             resource: '=',
             currentPage: '=?',
-            itemsPerPage: '=?'
+            itemsPerPage: '=?',
+            numberOfPages: '=?',
+            labels: '=?',
+            showBoundaries: '=?'
         },
         templateUrl: 'static/app/common/directives/pagination/pagination.template.html',
         link: function ($scope) {
             $scope.itemsPerPage = $scope.itemsPerPage || 12;
+            $scope.numberOfPages = $scope.numberOfPages || 20;
 
             $scope.$watch('model', function (newVal) {
                 if (newVal.$resolved) {
@@ -17,15 +21,20 @@ app.directive('customPagination', function () {
                 }
             }, true);
 
+            $scope.labels = {
+                first: '«',
+                previous: '‹',
+                next: '›',
+                last: '»'
+            } || $scope.labels;
+
             if (typeof $scope.currentPage === 'undefined') {
                 $scope.currentPage = 1;
 
-                $scope.$watch('currentPage', function (newVal, oldVal) {
-                    if (newVal != oldVal) {
-                        $scope.resource.get({page: newVal}, function (data) {
-                            $scope.model = data;
-                        });
-                    }
+                $scope.$watch('currentPage', function (newVal) {
+                    $scope.resource.get({page: newVal}, function (data) {
+                        $scope.model = data;
+                    });
                 });
             }
         }

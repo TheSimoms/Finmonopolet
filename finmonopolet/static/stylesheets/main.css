@@ -53,20 +53,22 @@
 
 .filter-list-container {
     margin-top: -15px;
-    margin-bottom: -35px;
+    margin-bottom: -40px;
 
     border: 0;
 }
 .filter-list-container .list-group {
-    max-height: 300px;
-
     padding-bottom: 5px;
-
-    overflow-y: auto;
 }
 .filter-list-container .list-group .list-group-item {
     border-left: 0;
     border-right: 0;
 
     overflow-x: auto;
+    overflow-y: hidden;
+}
+
+.custom-pagination {
+    margin-bottom: -25px;
+    margin-top: 10px;
 }

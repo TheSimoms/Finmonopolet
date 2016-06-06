@@ -1,7 +1,6 @@
 from django.db.models import Count
-from django.shortcuts import get_object_or_404
 
-from rest_framework import serializers, viewsets, routers, response
+from rest_framework import serializers, viewsets, routers, pagination
 
 from product.models import Category, Country, Producer, Suits
 
@@ -15,6 +14,10 @@ class SharedAPIRootRouter(routers.SimpleRouter):
         super().register(*args, **kwargs)
 
 
+class ForeignKeyPagination(pagination.PageNumberPagination):
+    page_size = 5
+
+
 class ForeignKeySerializer(serializers.Serializer):
     id = serializers.IntegerField()
     name = serializers.CharField()
@@ -24,42 +27,36 @@ class ForeignKeyListSerializer(ForeignKeySerializer):
     number_of_products = serializers.IntegerField()
 
 
-class ForeignKeyViewSet(viewsets.ViewSet):
-    pagination_class = None
+class ForeignKeyViewSet(viewsets.ReadOnlyModelViewSet):
+    pagination_class = ForeignKeyPagination
 
-    ordering_fields = ('canonical_name', 'number_of_products', )
+    ordering_fields = ('canonical_name', )
     search_fields = ('canonical_name', )
 
-    # FIXME: Un-hack this. Probably change to class method
-    @staticmethod
-    def get_model(request, pk=False):
-        model_name = request.path.split('/')[-2 if pk else -1]
+    def get_queryset(self):
+        model_name = self.request.path.split('/')[2]
 
         if model_name == 'categories':
-            return Category
+            queryset = Category
         elif model_name == 'countries':
-            return Country
+            queryset = Country
         elif model_name == 'producers':
-            return Producer
+            queryset = Producer
         elif model_name == 'suits':
-            return Suits
+            queryset = Suits
+        else:
+            return
 
-    def list(self, request):
-        queryset = self.get_model(request).objects.annotate(
+        return queryset.objects.annotate(
             number_of_products=Count('products'),
         ).filter(
             number_of_products__gt=0
         )
 
-        serializer = ForeignKeyListSerializer(queryset, many=True)
-
-        return response.Response(serializer.data)
-
-    def retrieve(self, request, pk=None):
-        queryset = self.get_model(request, pk=True).objects.all()
-
-        item = get_object_or_404(queryset, pk=pk)
-
-        serializer = ForeignKeySerializer(item)
-
-        return response.Response(serializer.data)
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return ForeignKeyListSerializer
+        elif self.action == 'retrieve':
+            return ForeignKeySerializer
+        else:
+            return ForeignKeySerializer

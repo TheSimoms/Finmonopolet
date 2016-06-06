@@ -1,6 +1,7 @@
-<div class="col-sm-12 text-center" ng-show="totalItems > itemsPerPage">
-    <uib-pagination boundary-links="true" total-items="totalItems" class="pagination-sm" items-per-page="itemsPerPage"
-                    previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;"
-                    ng-model="currentPage" max-size="15">
+<div class="col-sm-12 text-center custom-pagination" ng-show="totalItems > itemsPerPage">
+    <uib-pagination boundary-links="showBoundaries" total-items="totalItems" class="pagination-sm"
+                    items-per-page="itemsPerPage" ng-model="currentPage" max-size="numberOfPages"
+                    previous-text="{{ labels.previous }}" next-text="{{ labels.next }}"
+                    first-text="{{ labels.first }}" last-text="{{ labels.last }}">
     </uib-pagination>
 </div>
