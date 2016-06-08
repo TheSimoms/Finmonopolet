@@ -11,7 +11,7 @@ class SharedAPIRootRouter(routers.SimpleRouter):
     def register(self, *args, **kwargs):
         self.shared_router.register(*args, **kwargs)
 
-        super().register(*args, **kwargs)
+        super(SharedAPIRootRouter, self).register(*args, **kwargs)
 
 
 class ForeignKeyPagination(pagination.PageNumberPagination):

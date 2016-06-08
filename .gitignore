@@ -1,5 +1,5 @@
 # Library files
-finmonopolet/static/libs
+src/finmonopolet/static/libs
 
 # Swap files
 *.swp
