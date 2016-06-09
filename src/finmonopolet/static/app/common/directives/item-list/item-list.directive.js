@@ -57,23 +57,23 @@ app.directive('itemList', function ($q, $timeout, Product, Category, Country, Pr
 
             $scope.rangeFilters = {
                 price: {
-                    title: 'Pris', unit: ',-', pristine: true,
+                    title: 'Pris', unit: ',-', displayText: '',
                     type: 'range', values: ['', '']
                 },
                 volume: {
-                    title: 'Volum',  unit: ' l', pristine: true,
+                    title: 'Volum',  unit: ' l', displayText: true,
                     type: 'range', values: ['', '']
                 },
                 alcohol: {
-                    title: 'Alkoholinnhold',  unit: ' %', pristine: true,
+                    title: 'Alkoholinnhold',  unit: ' %', displayText: true,
                     type: 'range', values: ['', '']
                 },
                 litre_price: {
-                    title: 'Pris pr. liter',  unit: ',- pr. l', pristine: true,
+                    title: 'Pris pr. liter',  unit: ',- pr. l', displayText: true,
                     type: 'range', values: ['', '']
                 },
                 alcohol_price: {
-                    title: 'Pris pr. %',  unit: ',- pr. %', pristine: true,
+                    title: 'Pris pr. %',  unit: ',- pr. %', displayText: true,
                     type: 'range', values: ['', '']
                 }
             };
@@ -100,26 +100,18 @@ app.directive('itemList', function ($q, $timeout, Product, Category, Country, Pr
                 }
             };
 
-            $scope.isRangeFilterActive = function (filter) {
-                for (var i = 0; i < 2; i++) {
-                    if (filter.values[i] != '') {
-                        return true;
-                    }
-                }
-
-                return false;
-            };
-
-            $scope.getFilterString = function (filter) {
+            var setFilterString = function (filter) {
                 var filterValues = [parseFloat(filter.values[0]), parseFloat(filter.values[1])];
 
+                filter.displayText = '';
+
                 if (isNaN(filterValues[0]) && !isNaN(filterValues[1])) {
-                    return 'Under ' +  filterValues[1];
+                    filter.displayText = 'Under ' +  filterValues[1];
                 } else if (isNaN(filterValues[1]) && !isNaN(filterValues[0])) {
-                    return 'Over ' + filterValues[0];
+                    filter.displayText = 'Over ' + filterValues[0];
                 } else if (!isNaN(filterValues[0]) && !isNaN(filterValues[1])) {
                     if (filterValues[0] <= filterValues[1]) {
-                        return filterValues[0] + ' - ' + filterValues[1];
+                        filter.displayText = filterValues[0] + ' - ' + filterValues[1];
                     }
                 }
             };
@@ -151,11 +143,12 @@ app.directive('itemList', function ($q, $timeout, Product, Category, Country, Pr
                     }
                 }
 
+                setFilterString(filter);
+
                 if (typeof queryValue !== 'undefined') {
                     $scope.filtering[queryString] = queryValue;
-                }
 
-                filter.pristine = true;
+                }
             };
 
             var clearListFilters = function () {
@@ -168,6 +161,7 @@ app.directive('itemList', function ($q, $timeout, Product, Category, Country, Pr
 
             $scope.clearRangeFilter = function (filter, filterLabel) {
                 filter.values = ['', ''];
+                filter.displayText = '';
 
                 for (var oldFilterLabel in $scope.filtering) {
                     if ($scope.filtering.hasOwnProperty(oldFilterLabel) && oldFilterLabel.startsWith(filterLabel)) {
@@ -176,8 +170,6 @@ app.directive('itemList', function ($q, $timeout, Product, Category, Country, Pr
                         break;
                     }
                 }
-
-                filter.pristine = true;
             };
 
             var clearRangeFilters = function () {
@@ -189,6 +181,12 @@ app.directive('itemList', function ($q, $timeout, Product, Category, Country, Pr
             $scope.clearFilters = function () {
                 clearListFilters();
                 clearRangeFilters();
+            };
+
+            $scope.notSelected = function (filter) {
+                return function (item) {
+                    return filter.selected.indexOf(item) === -1;
+                };
             };
 
             function filter () {

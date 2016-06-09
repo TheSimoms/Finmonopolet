@@ -55,9 +55,9 @@
 
             <!-- Range filters -->
             <div ng-repeat="(filterLabel, filter) in rangeFilters">
-                <a class="list-group-item interact" ng-show="isRangeFilterActive(filter) && filter.pristine"
+                <a class="list-group-item interact" ng-show="filter.displayText.length > 0"
                    ng-click="clearRangeFilter(filter, filterLabel)">
-                    {{ filter.title }}: {{ getFilterString(filter) }}{{ filter.unit }}
+                    {{ filter.title }}: {{ filter.displayText }}{{ filter.unit }}
                     <span class="badge">
                         <i class="fa fa-times pull-right"></i>
                     </span>
@@ -69,10 +69,8 @@
             <h4 ng-click="isCollapsed = !isCollapsed;" class="interact">
                 Tilpass resultat
 
-                <span class="pull-right">
-                    <i class="fa fa-plus" ng-show="isCollapsed"></i>
-                    <i class="fa fa-minus" ng-show="!isCollapsed"></i>
-                </span>
+                <i class="fa fa-plus pull-right" ng-show="isCollapsed"></i>
+                <i class="fa fa-minus pull-right" ng-show="!isCollapsed"></i>
             </h4>
 
             <div uib-collapse="isCollapsed">
@@ -93,7 +91,7 @@
                             <div class="list-group">
                                 <!-- Item list -->
                                 <a class="list-group-item"
-                                   ng-repeat="item in filter.data.results"
+                                   ng-repeat="item in filter.data.results | filter : notSelected(filter)"
                                    ng-show="filter.data.$resolved"
                                    ng-click="updateListFilter(filter, item)" role="button">
                                     {{ item.name }}
@@ -133,7 +131,7 @@
                             <div class="form-group">
                                 <div class="input-group">
                                     <input type="text" class="form-control" ng-model="filter.values[0]"
-                                           placeholder="Minimum" ng-change="filter.pristine = false;"
+                                           placeholder="Minimum"
                                            ng-keyup="$event.keyCode == 13 && updateRangeFilter(filter, filterLabel)">
                                     <div class="input-group-addon">{{ filter.unit }}</div>
                                 </div>
@@ -141,7 +139,7 @@
                             <div class="form-group">
                                 <div class="input-group">
                                     <input type="text" class="form-control" ng-model="filter.values[1]"
-                                           placeholder="Maksimum" ng-change="filter.pristine = false;"
+                                           placeholder="Maksimum"
                                            ng-keyup="$event.keyCode == 13 && updateRangeFilter(filter, filterLabel)">
                                     <div class="input-group-addon">{{ filter.unit }}</div>
                                 </div>
