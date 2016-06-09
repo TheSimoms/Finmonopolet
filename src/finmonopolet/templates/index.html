@@ -15,29 +15,38 @@
 
 <body>
 <!-- Nav bar -->
-<nav class="navbar navbar-default navbar-static-top">
+<nav class="navbar navbar-default navbar-static-top" ng-init="isCollapsed = true;">
     <div class="container">
         <!-- Nav bar header -->
         <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" ng-click="isCollapsed = !isCollapsed;">
+                <span class="sr-only">Vis meny</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+
             <a class="navbar-brand" ui-sref="home">Finmonopolet</a>
         </div>
 
-        <!-- Main nav bar -->
-        <ul class="nav navbar-nav">
-            <!-- Links -->
-            <li ng-class="{ active: isActiveState('home')}">
-                <a ui-sref="home">Hjem</a>
-            </li>
-            <li ng-class="{ active: isActiveState('assortment')}">
-                <a ui-sref="assortment.list">Vareutvalg <i class="fa fa-glass"></i></a>
-            </li>
-            <li ng-class="{ active: isActiveState('statistics')}">
-                <a ui-sref="statistics.list">Statistikk <i class="fa fa-pie-chart"></i></a>
-            </li>
-            <li ng-class="{ active: isActiveState('store')}">
-                <a ui-sref="store.list">Butikker <i class="fa fa-university"></i></a>
-            </li>
-        </ul>
+        <div class="collapse navbar-collapse" uib-collapse="isCollapsed">
+            <!-- Main nav bar -->
+            <ul class="nav navbar-nav">
+                <!-- Links -->
+                <li ng-class="{ active: isActiveState('home')}">
+                    <a ui-sref="home">Hjem</a>
+                </li>
+                <li ng-class="{ active: isActiveState('assortment')}">
+                    <a ui-sref="assortment.list">Vareutvalg <i class="fa fa-glass"></i></a>
+                </li>
+                <li ng-class="{ active: isActiveState('statistics')}">
+                    <a ui-sref="statistics.list">Statistikk <i class="fa fa-pie-chart"></i></a>
+                </li>
+                <li ng-class="{ active: isActiveState('store')}">
+                    <a ui-sref="store.list">Butikker <i class="fa fa-university"></i></a>
+                </li>
+            </ul>
+        </div>
     </div>
 </nav>
 
