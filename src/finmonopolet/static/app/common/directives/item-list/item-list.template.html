@@ -42,10 +42,22 @@
     <div class="col-md-3 col-sm-12">
         <!-- Selected filters -->
         <div class="list-group">
+            <!-- List filters -->
             <div ng-repeat="filter in filters">
                 <a class="list-group-item interact" ng-repeat="item in filter.selected"
-                     ng-click="selectFilter(filter, item)">
+                   ng-click="updateListFilter(filter, item)">
                     {{ filter.title }}: {{ item.name }}
+                    <span class="badge">
+                        <i class="fa fa-times pull-right"></i>
+                    </span>
+                </a>
+            </div>
+
+            <!-- Range filters -->
+            <div ng-repeat="(filterLabel, filter) in rangeFilters">
+                <a class="list-group-item interact" ng-show="isRangeFilterActive(filter) && filter.pristine"
+                   ng-click="clearRangeFilter(filter, filterLabel)">
+                    {{ filter.title }}: {{ getFilterString(filter) }}{{ filter.unit }}
                     <span class="badge">
                         <i class="fa fa-times pull-right"></i>
                     </span>
@@ -53,94 +65,97 @@
             </div>
         </div>
 
-        <h4>
-            Filtrér resultat
-        </h4>
-
-        <uib-accordion close-others="false">
-            <uib-accordion-group is-open="isOpen" ng-repeat="(filterLabel, filterValues) in filters">
-                <uib-accordion-heading>
-                    <div class="row">
-                        <div class="col-xs-12">
-                            {{ filterValues.title }}
-                            <i class="fa fa-minus fa-pull-right" ng-show="isOpen"></i>
-                            <i class="fa fa-plus fa-pull-right" ng-show="!isOpen"></i>
-                        </div>
-                    </div>
-                </uib-accordion-heading>
-
-                <div class="row filter-list-container">
-                    <div class="list-group">
-                        <!-- Item list -->
-                        <a class="list-group-item"
-                           ng-repeat="item in filterValues.data.results"
-                           ng-show="filterValues.data.$resolved"
-                           ng-click="selectFilter(filterValues, item)" role="button">
-                            {{ item.name }}
-                            <span class="badge" ng-show="filterValues.selected.indexOf(item) < 0">
-                                {{ item.number_of_products }}
-                            </span>
-                            <span class="badge" ng-show="filterValues.selected.indexOf(item) >= 0">
-                                <i class="fa fa-times"></i>
-                            </span>
-                        </a>
-
-                        <a class="list-group-item" ng-show="!filterValues.data.$resolved">
-                            <i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i>
-                            <span class="sr-only">Laster...</span>
-                        </a>
-                    </div>
-                </div>
-
-                <custom-pagination model="filterValues.data" resource="filterValues.resource" items-per-page="5"
-                                   number-of-pages="5">
-                </custom-pagination>
-            </uib-accordion-group>
-        </uib-accordion>
-
-        <h4>
-            Tilpass resultat
-        </h4>
-
-        <uib-accordion close-others="false">
-            <uib-accordion-group is-open="isOpen" ng-repeat="(filterLabel, filterValues) in rangeFilters">
-                <uib-accordion-heading>
-                    <div class="row">
-                        <div class="col-xs-12">
-                            {{ filterValues.title }}
-                            <i class="fa fa-minus fa-pull-right" ng-show="isOpen"></i>
-                            <i class="fa fa-plus fa-pull-right" ng-show="!isOpen"></i>
-                        </div>
-                    </div>
-                </uib-accordion-heading>
-
-                <div class="form">
-                    <div class="form-group">
-                        <div class="input-group">
-                            <input type="text" class="form-control" ng-model="filterValues.values[0]"
-                                   placeholder="Minimum" ng-keyup="$event.keyCode == 13 && updateRangeFilters()">
-                            <div class="input-group-addon">{{ filterValues.unit }}</div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="input-group">
-                            <input type="text" class="form-control" ng-model="filterValues.values[1]"
-                                   placeholder="Maksimum" ng-keyup="$event.keyCode == 13 && updateRangeFilters()">
-                            <div class="input-group-addon">{{ filterValues.unit }}</div>
-                        </div>
-                    </div>
-                </div>
-            </uib-accordion-group>
-        </uib-accordion>
-
-        <div class="margin-bottom">
-            <button class="btn btn-primary" ng-click="updateRangeFilters()">
+        <div ng-init="isCollapsed = true;">
+            <h4 ng-click="isCollapsed = !isCollapsed;" class="interact">
                 Tilpass resultat
-            </button>
 
-            <button class="btn btn-default" ng-click="clearRangeFilters()">
-                Tilbakestill resultat
-            </button>
+                <span class="pull-right">
+                    <i class="fa fa-plus" ng-show="isCollapsed"></i>
+                    <i class="fa fa-minus" ng-show="!isCollapsed"></i>
+                </span>
+            </h4>
+
+            <div uib-collapse="isCollapsed">
+                <uib-accordion close-others="false">
+                    <!-- List filters -->
+                    <uib-accordion-group is-open="isOpen" ng-repeat="(filterLabel, filter) in filters">
+                        <uib-accordion-heading>
+                            <div class="row">
+                                <div class="col-xs-12">
+                                    {{ filter.title }}
+                                    <i class="fa fa-minus fa-pull-right" ng-show="isOpen"></i>
+                                    <i class="fa fa-plus fa-pull-right" ng-show="!isOpen"></i>
+                                </div>
+                            </div>
+                        </uib-accordion-heading>
+
+                        <div class="row filter-list-container">
+                            <div class="list-group">
+                                <!-- Item list -->
+                                <a class="list-group-item"
+                                   ng-repeat="item in filter.data.results"
+                                   ng-show="filter.data.$resolved"
+                                   ng-click="updateListFilter(filter, item)" role="button">
+                                    {{ item.name }}
+                                    <span class="badge" ng-show="filter.selected.indexOf(item) < 0">
+                                        {{ item.number_of_products }}
+                                    </span>
+                                    <span class="badge" ng-show="filter.selected.indexOf(item) >= 0">
+                                        <i class="fa fa-times"></i>
+                                    </span>
+                                </a>
+
+                                <a class="list-group-item" ng-show="!filter.data.$resolved">
+                                    <i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i>
+                                    <span class="sr-only">Laster...</span>
+                                </a>
+                            </div>
+                        </div>
+
+                        <custom-pagination model="filter.data" resource="filter.resource" items-per-page="5"
+                                           number-of-pages="5">
+                        </custom-pagination>
+                    </uib-accordion-group>
+
+                    <!-- Range filters -->
+                    <uib-accordion-group is-open="isOpen" ng-repeat="(filterLabel, filter) in rangeFilters">
+                        <uib-accordion-heading>
+                            <div class="row">
+                                <div class="col-xs-12">
+                                    {{ filter.title }}
+                                    <i class="fa fa-minus fa-pull-right" ng-show="isOpen"></i>
+                                    <i class="fa fa-plus fa-pull-right" ng-show="!isOpen"></i>
+                                </div>
+                            </div>
+                        </uib-accordion-heading>
+
+                        <div class="form">
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" ng-model="filter.values[0]"
+                                           placeholder="Minimum" ng-change="filter.pristine = false;"
+                                           ng-keyup="$event.keyCode == 13 && updateRangeFilter(filter, filterLabel)">
+                                    <div class="input-group-addon">{{ filter.unit }}</div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" ng-model="filter.values[1]"
+                                           placeholder="Maksimum" ng-change="filter.pristine = false;"
+                                           ng-keyup="$event.keyCode == 13 && updateRangeFilter(filter, filterLabel)">
+                                    <div class="input-group-addon">{{ filter.unit }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </uib-accordion-group>
+                </uib-accordion>
+
+                <div class="margin-bottom">
+                    <button class="btn btn-default" ng-click="clearFilters()">
+                        Tilbakestill resultat
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 

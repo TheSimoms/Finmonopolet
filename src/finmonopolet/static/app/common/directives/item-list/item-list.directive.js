@@ -57,24 +57,24 @@ app.directive('itemList', function ($q, $timeout, Product, Category, Country, Pr
 
             $scope.rangeFilters = {
                 price: {
-                    title: 'Pris', unit: ',-',
-                    type: 'range', values: [null, null]
+                    title: 'Pris', unit: ',-', pristine: true,
+                    type: 'range', values: ['', '']
                 },
                 volume: {
-                    title: 'Volum',  unit: ' l',
-                    type: 'range', values: [null, null]
+                    title: 'Volum',  unit: ' l', pristine: true,
+                    type: 'range', values: ['', '']
                 },
                 alcohol: {
-                    title: 'Alkoholinnhold',  unit: ' %',
-                    type: 'range', values: [null, null]
+                    title: 'Alkoholinnhold',  unit: ' %', pristine: true,
+                    type: 'range', values: ['', '']
                 },
                 litre_price: {
-                    title: 'Pris pr. liter',  unit: ',- pr. l',
-                    type: 'range', values: [null, null]
+                    title: 'Pris pr. liter',  unit: ',- pr. l', pristine: true,
+                    type: 'range', values: ['', '']
                 },
                 alcohol_price: {
-                    title: 'Pris pr. %',  unit: ',- pr. %',
-                    type: 'range', values: [null, null]
+                    title: 'Pris pr. %',  unit: ',- pr. %', pristine: true,
+                    type: 'range', values: ['', '']
                 }
             };
 
@@ -82,70 +82,113 @@ app.directive('itemList', function ($q, $timeout, Product, Category, Country, Pr
                 $scope.filtering.search = search.toLowerCase();
             };
 
-            $scope.selectFilter = function (filterValues, item) {
-                var index = filterValues.selected.indexOf(item);
+            $scope.updateListFilter = function (filter, item) {
+                var index = filter.selected.indexOf(item);
 
                 if (index >= 0) {
-                    filterValues.selected.splice(index, 1);
+                    filter.selected.splice(index, 1);
                 } else {
-                    filterValues.selected.push(item);
+                    filter.selected.push(item);
                 }
 
-                if (filterValues.selected.length == 0) {
-                    delete $scope.filtering[filterValues.filter_name];
+                if (filter.selected.length == 0) {
+                    delete $scope.filtering[filter.filter_name];
                 } else {
-                    $scope.filtering[filterValues.filter_name] = filterValues.selected.map(function (item) {
+                    $scope.filtering[filter.filter_name] = filter.selected.map(function (item) {
                         return item.id;
                     }).join();
                 }
             };
 
-            $scope.updateRangeFilters = function () {
-                angular.forEach($scope.rangeFilters, function (filter, filterLabel) {
-                    var queryString = filterLabel + '__';
-                    var queryValue;
-
-                    var filterValues = [parseFloat(filter.values[0]), parseFloat(filter.values[1])];
-
-                    if (isNaN(filterValues[0]) && !isNaN(filterValues[1])) {
-                        queryString += 'lte';
-                        queryValue =  filterValues[1];
-                    } else if (isNaN(filterValues[1]) && !isNaN(filterValues[0])) {
-                        queryString += 'gte';
-                        queryValue = filterValues[0];
-                    } else if (!isNaN(filterValues[0]) && !isNaN(filterValues[1])) {
-                        if (filterValues[0] <= filterValues[1]) {
-                            queryString += 'range';
-                            queryValue = filterValues[0] + ',' + filterValues[1];
-                        }
+            $scope.isRangeFilterActive = function (filter) {
+                for (var i = 0; i < 2; i++) {
+                    if (filter.values[i] != '') {
+                        return true;
                     }
+                }
 
-                    for (var oldFilterLabel in $scope.filtering) {
-                        if ($scope.filtering.hasOwnProperty(oldFilterLabel) && oldFilterLabel.startsWith(filterLabel)) {
-                            delete $scope.filtering[oldFilterLabel];
+                return false;
+            };
 
-                            break;
-                        }
+            $scope.getFilterString = function (filter) {
+                var filterValues = [parseFloat(filter.values[0]), parseFloat(filter.values[1])];
+
+                if (isNaN(filterValues[0]) && !isNaN(filterValues[1])) {
+                    return 'Under ' +  filterValues[1];
+                } else if (isNaN(filterValues[1]) && !isNaN(filterValues[0])) {
+                    return 'Over ' + filterValues[0];
+                } else if (!isNaN(filterValues[0]) && !isNaN(filterValues[1])) {
+                    if (filterValues[0] <= filterValues[1]) {
+                        return filterValues[0] + ' - ' + filterValues[1];
                     }
+                }
+            };
 
-                    if (typeof queryValue !== 'undefined') {
-                        $scope.filtering[queryString] = queryValue;
+            $scope.updateRangeFilter = function (filter, filterLabel) {
+                var queryString = filterLabel + '__';
+                var queryValue;
+
+                var filterValues = [parseFloat(filter.values[0]), parseFloat(filter.values[1])];
+
+                if (isNaN(filterValues[0]) && !isNaN(filterValues[1])) {
+                    queryString += 'lte';
+                    queryValue =  filterValues[1];
+                } else if (isNaN(filterValues[1]) && !isNaN(filterValues[0])) {
+                    queryString += 'gte';
+                    queryValue = filterValues[0];
+                } else if (!isNaN(filterValues[0]) && !isNaN(filterValues[1])) {
+                    if (filterValues[0] <= filterValues[1]) {
+                        queryString += 'range';
+                        queryValue = filterValues[0] + ',' + filterValues[1];
                     }
+                }
+
+                for (var oldFilterLabel in $scope.filtering) {
+                    if ($scope.filtering.hasOwnProperty(oldFilterLabel) && oldFilterLabel.startsWith(filterLabel)) {
+                        delete $scope.filtering[oldFilterLabel];
+
+                        break;
+                    }
+                }
+
+                if (typeof queryValue !== 'undefined') {
+                    $scope.filtering[queryString] = queryValue;
+                }
+
+                filter.pristine = true;
+            };
+
+            var clearListFilters = function () {
+                angular.forEach($scope.filters, function (filter) {
+                    filter.selected = [];
+
+                    delete $scope.filtering[filter.filter_name];
                 });
             };
 
-            $scope.clearRangeFilters = function () {
-                angular.forEach($scope.rangeFilters, function (filter, filterLabel) {
-                    filter.values = [null, null];
+            $scope.clearRangeFilter = function (filter, filterLabel) {
+                filter.values = ['', ''];
 
-                    for (var oldFilterLabel in $scope.filtering) {
-                        if ($scope.filtering.hasOwnProperty(oldFilterLabel) && oldFilterLabel.startsWith(filterLabel)) {
-                            delete $scope.filtering[oldFilterLabel];
+                for (var oldFilterLabel in $scope.filtering) {
+                    if ($scope.filtering.hasOwnProperty(oldFilterLabel) && oldFilterLabel.startsWith(filterLabel)) {
+                        delete $scope.filtering[oldFilterLabel];
 
-                            break;
-                        }
+                        break;
                     }
+                }
+
+                filter.pristine = true;
+            };
+
+            var clearRangeFilters = function () {
+                angular.forEach($scope.rangeFilters, function (filter, filterLabel) {
+                    $scope.clearRangeFilter(filter, filterLabel);
                 });
+            };
+
+            $scope.clearFilters = function () {
+                clearListFilters();
+                clearRangeFilters();
             };
 
             function filter () {
