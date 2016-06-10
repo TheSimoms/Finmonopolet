@@ -37,9 +37,6 @@
 .item-heading {
     text-align: left;
 }
-.item .item-heading {
-    min-height: 110px;
-}
 .item-heading h4 {
     font-weight: bold;
     margin: 0;
@@ -58,11 +55,18 @@
     color: #4BB047;
 }
 
+.list-group-item.selected {
+    background-color: #f5f5f5;
+}
+
 .nav.nav-tabs {
     margin-bottom: 20px;
 }
 
-.angular-google-map-container { height: 600px; width: 400px; }
+.angular-google-map-container {
+    height: 600px;
+    width: 400px;
+}
 
 .filter-list-container {
     margin-top: -15px;
@@ -84,4 +88,11 @@
 .custom-pagination {
     margin-bottom: -25px;
     margin-top: 10px;
+}
+
+@media screen and (min-width: 992px) {
+    .filter-container{
+        display: block !important;
+        visibility: visible !important;
+    }
 }

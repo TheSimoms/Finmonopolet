@@ -1,7 +1,7 @@
 <h2 ng-if="title" ng-bind="title"></h2>
 
 <!-- Filtering -->
-<div class="row margin-bottom">
+<div class="row">
     <!-- Search -->
     <div class="col-md-offset-3 col-md-3 col-sm-6">
         <form ng-submit="search(searchString)">
@@ -36,6 +36,8 @@
     </div>
 </div>
 
+<div class="row margin-bottom hidden-sm"></div>
+
 <!-- Items -->
 <div class="row">
     <!-- Filtering -->
@@ -66,14 +68,18 @@
         </div>
 
         <div ng-init="isCollapsed = true;">
-            <h4 ng-click="isCollapsed = !isCollapsed;" class="interact">
+            <h4 ng-click="isCollapsed = !isCollapsed;" class="visible-sm interact">
                 Tilpass resultat
 
                 <i class="fa fa-plus pull-right" ng-show="isCollapsed"></i>
                 <i class="fa fa-minus pull-right" ng-show="!isCollapsed"></i>
             </h4>
 
-            <div uib-collapse="isCollapsed">
+            <h4 class="hidden-sm">
+                Tilpass resultat
+            </h4>
+
+            <div class="nav-collapse collapse filter-container" uib-collapse="isCollapsed">
                 <uib-accordion close-others="false">
                     <!-- List filters -->
                     <uib-accordion-group is-open="isOpen" ng-repeat="(filterLabel, filter) in filters">
@@ -91,14 +97,16 @@
                             <div class="list-group">
                                 <!-- Item list -->
                                 <a class="list-group-item"
-                                   ng-repeat="item in filter.data.results | filter : notSelected(filter)"
+                                   ng-repeat="item in filter.data.results"
                                    ng-show="filter.data.$resolved"
-                                   ng-click="updateListFilter(filter, item)" role="button">
+                                   ng-click="updateListFilter(filter, item)"
+                                   ng-class="{ 'selected': itemSelected(filter, item) }"
+                                   role="button">
                                     {{ item.name }}
-                                    <span class="badge" ng-show="filter.selected.indexOf(item) < 0">
+                                    <span class="badge" ng-show="!itemSelected(filter, item)">
                                         {{ item.number_of_products }}
                                     </span>
-                                    <span class="badge" ng-show="filter.selected.indexOf(item) >= 0">
+                                    <span class="badge" ng-show="itemSelected(filter, item)">
                                         <i class="fa fa-times"></i>
                                     </span>
                                 </a>
@@ -160,38 +168,41 @@
     <!-- Items -->
     <div class="col-md-9 col-sm-12">
         <div class="row" ng-show="model.$resolved">
-            <div class="col-md-4 col-sm-6" ng-repeat="item in model.results" ng-show="model.count>0">
-                <div class="thumbnail item">
-                    <div class="caption item-heading">
-                        <h4>
-                            <a ui-sref="assortment.product({productId: item.id})">
-                                {{ item.name }}
+            <div ng-repeat="item in model.results">
+                <div class="clearfix" ng-if="$index % 3 == 0"></div>
+                <div class="col-md-4 col-sm-6" ng-show="model.count>0">
+                    <div class="thumbnail item">
+                        <div class="caption item-heading">
+                            <h4>
+                                <a ui-sref="assortment.product({productId: item.id})">
+                                    {{ item.name }}
+                                </a>
+                            </h4>
+                            <a ui-sref="assortment.category({categoryId: item.category.id})">
+                                <span>{{ item.category.name }}</span>
                             </a>
-                        </h4>
-                        <a ui-sref="assortment.category({categoryId: item.category.id})">
-                            <span>{{ item.category.name }}</span>
-                        </a>
-                        ({{ item.country.name }})<br />
-                        <span ng-if="item.producer">
-                            {{ item.producer.name }}
-                        </span>
-                        <span ng-if="!item.producer">
-                            Produsent ikke oppgitt
-                        </span>
-                    </div>
-                    <div class="caption item-meta">
-                        <small>
-                            {{ item.alcohol }} %<br />
-                            Volum: {{ item.volume }} l
-                        </small>
-                        <div class="price">
-                            Pris: {{ item.price }},-<br/>
-                            <span>{{ item.litre_price }},- pr. liter</span>
-                            <span>
-                                <br />
-                                <span ng-if="item.alcohol_price <  99999.90">{{ item.alcohol_price }},- pr. %</span>
-                                <span ng-if="item.alcohol_price >=  99999.90">∞,- pr. %</span>
+                            ({{ item.country.name }})<br />
+                            <span ng-if="item.producer">
+                                {{ item.producer.name }}
                             </span>
+                            <span ng-if="!item.producer">
+                                Produsent ikke oppgitt
+                            </span>
+                        </div>
+                        <div class="caption item-meta">
+                            <small>
+                                {{ item.alcohol }} %<br />
+                                Volum: {{ item.volume }} l
+                            </small>
+                            <div class="price">
+                                Pris: {{ item.price }},-<br/>
+                                <span>{{ item.litre_price }},- pr. liter</span>
+                                <span>
+                                    <br />
+                                    <span ng-if="item.alcohol_price <  99999.90">{{ item.alcohol_price }},- pr. %</span>
+                                    <span ng-if="item.alcohol_price >=  99999.90">∞,- pr. %</span>
+                                </span>
+                            </div>
                         </div>
                     </div>
                 </div>

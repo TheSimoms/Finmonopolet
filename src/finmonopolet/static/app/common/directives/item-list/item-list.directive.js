@@ -186,10 +186,8 @@ app.directive('itemList', function ($q, $timeout, Product, Category, Country, Pr
                 clearRangeFilters();
             };
 
-            $scope.notSelected = function (filter) {
-                return function (item) {
-                    return filter.selected.indexOf(item) === -1;
-                };
+            $scope.itemSelected = function (filter, item) {
+                return filter.selected.indexOf(item) !== -1;
             };
 
             function filter () {
