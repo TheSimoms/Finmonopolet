@@ -14,6 +14,7 @@ class ProductSerializer(serializers.ModelSerializer):
     category = ForeignKeySerializer()
     country = ForeignKeySerializer()
     producer = ForeignKeySerializer()
+    selection = ForeignKeySerializer()
 
     store_category = StoreCategorySerializer()
 
@@ -27,8 +28,8 @@ class ProductSerializer(serializers.ModelSerializer):
 class ProductListSerializer(ProductSerializer):
     class Meta(ProductSerializer.Meta):
         fields = (
-            'id', 'name', 'category', 'country', 'producer', 'suits', 'volume', 'alcohol', 'price', 'litre_price',
-            'alcohol_price'
+            'id', 'name', 'category', 'country', 'producer',
+            'volume', 'alcohol', 'price', 'litre_price', 'alcohol_price'
         )
 
 
@@ -43,6 +44,7 @@ class ProductFilter(filters.FilterSet):
     producer = ListFilter(name='producer')
     store_category = ListFilter(name='store_category')
     suits = ListFilter(name='suits')
+    selection = ListFilter(name='selection')
 
     volume = filters.AllLookupsFilter(name='volume')
     alcohol = filters.AllLookupsFilter(name='alcohol')
@@ -53,8 +55,8 @@ class ProductFilter(filters.FilterSet):
     class Meta:
         model = Product
         fields = (
-            'category', 'country', 'producer', 'store_category', 'suits', 'volume', 'alcohol', 'price',
-            'litre_price', 'alcohol_price',
+            'category', 'country', 'producer', 'store_category', 'suits', 'selection',
+            'volume', 'alcohol', 'price', 'litre_price', 'alcohol_price',
         )
 
 
@@ -87,3 +89,4 @@ SharedAPIRootRouter().register(r'categories', ForeignKeyViewSet, base_name='cate
 SharedAPIRootRouter().register(r'countries', ForeignKeyViewSet, base_name='countries')
 SharedAPIRootRouter().register(r'producers', ForeignKeyViewSet, base_name='producers')
 SharedAPIRootRouter().register(r'suits', ForeignKeyViewSet, base_name='suits')
+SharedAPIRootRouter().register(r'selections', ForeignKeyViewSet, base_name='selections')

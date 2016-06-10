@@ -1,4 +1,14 @@
-from store.models import StoreCategory
+import sys
+import os
+import logging
+
+import django
+
+
+sys.path.append(os.path.abspath(os.path.join('/'.join(__file__.split('/')[:-1]), os.pardir)))
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'finmonopolet.settings')
+
+django.setup()
 
 
 def read_value(value, optional=False):
@@ -37,6 +47,8 @@ def read_string(value, optional=False):
 
 
 def read_store_category(value):
+    from store.models import StoreCategory
+
     try:
         category_number = int(value[-1])
     except ValueError:
@@ -53,3 +65,17 @@ def read_store_category(value):
         category = StoreCategory.objects.create(category_number=category_number, name=category_name)
 
     return category
+
+
+def update_database():
+    logging.basicConfig(level=logging.INFO, format='%(asctime)s %(message)s')
+
+    from product.update_database import update_products
+    from store.update_database import update_stores
+
+    update_products()
+    update_stores()
+
+
+if __name__ == '__main__':
+    update_database()

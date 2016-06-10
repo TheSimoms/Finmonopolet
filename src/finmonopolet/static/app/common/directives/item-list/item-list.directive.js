@@ -1,4 +1,4 @@
-app.directive('itemList', function ($q, $timeout, Product, Category, Country, Producer, Suits) {
+app.directive('itemList', function ($q, $timeout, Product, Category, Country, Producer, Suits, Selection) {
     return {
         restrict: 'E',
         scope: {
@@ -52,6 +52,9 @@ app.directive('itemList', function ($q, $timeout, Product, Category, Country, Pr
                 },
                 suits: {
                     title: 'Passer til', filter_name: 'suits', resource: Suits, data: [], selected: []
+                },
+                selection: {
+                    title: 'Produktutvalg', filter_name: 'selection', resource: Selection, data: [], selected: []
                 }
             };
 

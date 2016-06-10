@@ -2,7 +2,7 @@ from django.db.models import Count
 
 from rest_framework import serializers, viewsets, routers, pagination
 
-from product.models import Category, Country, Producer, Suits
+from product.models import Category, Country, Producer, Suits, Selection
 
 
 class SharedAPIRootRouter(routers.SimpleRouter):
@@ -44,6 +44,8 @@ class ForeignKeyViewSet(viewsets.ReadOnlyModelViewSet):
             queryset = Producer
         elif model_name == 'suits':
             queryset = Suits
+        elif model_name == 'selections':
+            queryset = Selection
         else:
             return
 

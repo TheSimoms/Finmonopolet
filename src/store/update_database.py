@@ -6,7 +6,7 @@ import django
 import logging
 import math
 
-from django.db.transaction import atomic
+from django.db import transaction
 
 
 sys.path.append(os.path.abspath(os.path.join('/'.join(__file__.split('/')[:-1]), os.pardir)))
@@ -14,14 +14,10 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'finmonopolet.settings')
 
 django.setup()
 
+
 from finmonopolet.update_database import read_string, read_float, read_integer, read_store_category
 
 from store.models import Store
-
-
-logging.basicConfig(level=logging.INFO)
-
-logger = logging.getLogger(__name__)
 
 
 def store_info_to_store(store_info):
@@ -63,12 +59,12 @@ def store_info_to_store(store_info):
     }
 
 
-@atomic()
+@transaction.atomic
 def update_stores():
     """
     Fetch remote store database from vinmonopolet.no. Parse the data and update local database.
     """
-    logger.info('Starting store database update')
+    logging.info('Starting store database update')
 
     with urllib.request.urlopen(
             # FIXME: Change back when redirect is in place. http://www.vinmonopolet.no/api/butikker
@@ -76,7 +72,7 @@ def update_stores():
     ) as f:
         f = f.read().decode('iso-8859-1').split('\r\n')
 
-        logger.info('Remote database read. Updating local database.')
+        logging.info('Remote database read. Updating local database.')
 
         reader = list(csv.DictReader(f[1:], delimiter=';', fieldnames=f[0].split(';')))
 
@@ -101,9 +97,9 @@ def update_stores():
             i += 1
 
             if i % logging_interval == 0:
-                logger.info('%.2f%% complete' % int(i / number_of_items * 100))
+                logging.info('%.2f%% complete' % int(i / number_of_items * 100))
 
-        logger.info('Database update complete')
+        logging.info('Database update complete')
 
 
 if __name__ == '__main__':

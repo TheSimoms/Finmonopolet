@@ -21,6 +21,10 @@ class Suits(BaseModel):
     pass
 
 
+class Selection(BaseModel):
+    pass
+
+
 class Product(BaseModel):
     product_number = models.IntegerField(verbose_name='Product ID', unique=True, db_index=True)
 
@@ -67,6 +71,10 @@ class Product(BaseModel):
 
     feedstock = models.TextField(verbose_name='Ingredients', blank=True, null=True)
     production_method = models.TextField(verbose_name='Production method', blank=True, null=True)
+
+    selection = models.ForeignKey(
+        Selection, verbose_name='Selection', on_delete=models.CASCADE, related_name='products', db_index=True
+    )
 
     alcohol = models.DecimalField(verbose_name='Alcohol percentage', max_digits=4, decimal_places=2, db_index=True)
     sugar = models.DecimalField(

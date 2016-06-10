@@ -7,35 +7,30 @@ import logging
 import math
 import datetime
 
-from django.db import IntegrityError, transaction
+from django.db import transaction
+
 
 sys.path.append(os.path.abspath(os.path.join('/'.join(__file__.split('/')[:-1]), os.pardir)))
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'finmonopolet.settings')
 
 django.setup()
 
-from finmonopolet.update_database import (
-    read_string, read_float, read_integer, read_store_category
-)
 
-from product.models import Product, Category, Country, Producer, Suits
+from finmonopolet.update_database import read_string, read_float, read_integer, read_store_category
 
-
-logging.basicConfig(level=logging.INFO)
-
-logger = logging.getLogger(__name__)
+from product.models import Product, Category, Country, Producer, Suits, Selection
 
 
-def read_category(value):
+def read_foreign_key(value, model, no_value='Ukjent'):
     if value is None:
-        value = 'Uspesifisert'
+        value = no_value
 
     try:
-        category = Category.objects.get(name=value)
-    except Category.DoesNotExist:
-        category = Category.objects.create(name=value)
+        item = model.objects.get(name=value)
+    except model.DoesNotExist:
+        item = model.objects.create(name=value)
 
-    return category
+    return item
 
 
 def read_suits(value):
@@ -52,35 +47,10 @@ def read_suits(value):
     return suits
 
 
-def read_country(value):
-    try:
-        country = Country.objects.get(name=value)
-    except Country.DoesNotExist:
-        country = Country.objects.create(name=value)
-
-    return country
-
-
-def read_producer(value):
-    if value is None:
-        value = 'Ukjent'
-
-    try:
-        producer = Producer.objects.get(name=value)
-    except Producer.DoesNotExist:
-        producer = Producer.objects.create(name=value)
-
-    return producer
-
-
 def product_info_to_product(product_info):
+    # Litre price, alcohol, and alcohol price
     litre_price = read_float(product_info['Literpris'])
     alcohol = read_float(product_info['Alkohol'])
-
-    vintage = read_integer(product_info['Argang'], True)
-
-    if vintage is None:
-        vintage = datetime.date.today().year
 
     if alcohol == 0.0:
         # FIXME: Un-hack this
@@ -88,10 +58,18 @@ def product_info_to_product(product_info):
     else:
         alcohol_price = litre_price / alcohol
 
+    # Vintage
+    vintage = read_integer(product_info['Argang'], True)
+
+    if vintage is None:
+        vintage = datetime.date.today().year
+
+    # Active
     active = read_string(product_info['Produktutvalg']) in [
         'Basisutvalget', 'Partiutvalget', 'Bestillingsutvalget'
     ]
 
+    # Suits
     suits_list = []
 
     for field_name in ['Passertil01', 'Passertil02', 'Passertil03']:
@@ -100,14 +78,10 @@ def product_info_to_product(product_info):
         if value is not None:
             suits_list.append(value)
 
-    name = read_string(product_info['Varenavn'])
-
-    country = read_country(product_info['Land'])
-
     return {
         'product_number': read_integer(product_info['Varenummer']),
 
-        'name': name,
+        'name': read_string(product_info['Varenavn']),
 
         'url': read_string(product_info['Vareurl']),
 
@@ -116,7 +90,7 @@ def product_info_to_product(product_info):
         'litre_price': litre_price,
         'alcohol_price': alcohol_price,
 
-        'category': read_category(read_string(product_info['Varetype'], True)),
+        'category': read_foreign_key(read_string(product_info['Varetype'], True), Category, 'Uspesifisert'),
 
         'fullness': read_integer(product_info['Fylde'], True),
         'freshness': read_integer(product_info['Friskhet'], True),
@@ -128,7 +102,7 @@ def product_info_to_product(product_info):
         'smell': read_string(product_info['Lukt'], True),
         'taste': read_string(product_info['Smak'], True),
 
-        'country': country,
+        'country': read_foreign_key(product_info['Land'], Country),
         'district': read_string(product_info['Distrikt'], True),
         'sub_district': read_string(product_info['Underdistrikt'], True),
 
@@ -137,13 +111,15 @@ def product_info_to_product(product_info):
         'feedstock': read_string(product_info['Rastoff'], True),
         'production_method': read_string(product_info['Metode'], True),
 
+        'selection': read_foreign_key(read_string(product_info['Produktutvalg']), Selection),
+
         'alcohol': alcohol,
         'sugar': read_float(product_info['Sukker'], True),
         'acid': read_float(product_info['Syre'], True),
 
         'storage': read_string(product_info['Lagringsgrad'], True),
 
-        'producer': read_producer(read_string(product_info['Produsent'], True)),
+        'producer': read_foreign_key(read_string(product_info['Produsent'], True), Producer),
         'wholesaler': read_string(product_info['Grossist'], True),
         'distributor': read_string(product_info['Distributor'], True),
 
@@ -156,12 +132,12 @@ def product_info_to_product(product_info):
     }, read_suits(suits_list)
 
 
-@transaction.atomic()
+@transaction.atomic
 def update_products():
     """
     Fetch remote product database from vinmonopolet.no. Parse the data and update local database.
     """
-    logger.info('Starting product database update')
+    logging.info('Starting product database update')
 
     with urllib.request.urlopen(
             # FIXME: Change back when redirect is in place. http://www.vinmonopolet.no/api/produkter
@@ -169,7 +145,7 @@ def update_products():
     ) as f:
         f = f.read().decode('iso-8859-1').split('\r\n')
 
-        logger.info('Remote database read. Updating local database.')
+        logging.info('Remote database read. Updating local database.')
 
         reader = list(csv.DictReader(f[1:], delimiter=';', fieldnames=f[0].split(';')))
 
@@ -179,36 +155,28 @@ def update_products():
         i = 0
 
         for product_info in reader:
-            try:
-                with transaction.atomic():
-                    product_info, suits = product_info_to_product(product_info)
-            except IntegrityError:
-                continue
+            product_info, suits = product_info_to_product(product_info)
 
             try:
                 product = Product.objects.get(product_number=product_info['product_number'])
 
                 product.active = False
 
-                product.suits = suits
-
                 for key, value in product_info.items():
                     setattr(product, key, value)
-
-                product.save()
             except Product.DoesNotExist:
                 product = Product.objects.create(**product_info)
 
-                product.suits = suits
+            product.suits = suits
 
-                product.save()
+            product.save()
 
             i += 1
 
             if i % logging_interval == 0:
-                logger.info('%.2f%% complete' % int(i / number_of_items * 100))
+                logging.info('%.2f%% complete' % int(i / number_of_items * 100))
 
-        logger.info('Database update complete')
+        logging.info('Database update complete')
 
 
 if __name__ == '__main__':
