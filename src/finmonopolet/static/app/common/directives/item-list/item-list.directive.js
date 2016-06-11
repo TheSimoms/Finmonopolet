@@ -10,6 +10,8 @@ app.directive('itemList', function ($q, $timeout, Product, Category, Country, Pr
         link: function ($scope) {
             $scope.resource = Product;
 
+            $scope.filterCounter = 0;
+
             $scope.filtering = $scope.lockedFilters || {};
 
             $scope.itemsPerPage = $scope.itemsPerPage || 12;
@@ -197,8 +199,14 @@ app.directive('itemList', function ($q, $timeout, Product, Category, Country, Pr
             };
 
             function filter () {
+                $scope.filterCounter = ($scope.filterCounter + 1) % 100;
+
+                var filterCounter = $scope.filterCounter;
+
                 $scope.resource.get($scope.filtering, function (data) {
-                    $scope.model = data;
+                    if ($scope.filterCounter == filterCounter) {
+                        $scope.model = data;
+                    }
                 });
             }
 
