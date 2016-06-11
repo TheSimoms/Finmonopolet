@@ -81,6 +81,12 @@ app.directive('itemList', function ($q, $timeout, Product, Category, Country, Pr
                 }
             };
 
+            if (typeof $scope.lockedFilters !== 'undefined') {
+                angular.forEach(Object.keys($scope.lockedFilters), function (filter) {
+                    delete $scope.filters[filter];
+                });
+            }
+
             $scope.search = function (search) {
                 $scope.filtering.search = search.toLowerCase();
             };

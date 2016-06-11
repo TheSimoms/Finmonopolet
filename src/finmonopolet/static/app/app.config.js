@@ -63,13 +63,45 @@ app.config(
                 url: '/varer/{productId:int}',
                 templateUrl: 'static/app/assortment/product/product.details.view.html',
                 controller: function ($scope, $stateParams, Product) {
-                    $scope.product = Product.get({ id: $stateParams.productId }, function (product) {
-                        $scope.category = product.category;
+                    $scope.product = Product.get({ id: $stateParams.productId });
+                },
+                ncyBreadcrumb: {
+                    parent: 'assortment.list',
+                    label: '{{ product.name }}'
+                }
+            })
+            .state('assortment.country', {
+                url: '/land/{countryId:int}',
+                templateUrl: 'static/app/assortment/assortment.details.view.html',
+                controller: function ($scope, $stateParams, Country) {
+                    $scope.filters = {
+                        country: $stateParams.countryId
+                    };
+
+                    $scope.country = Country.get({ id: $stateParams.countryId }, function (country) {
+                        $scope.title = country.name;
                     });
                 },
                 ncyBreadcrumb: {
-                    parent: 'assortment.category',
-                    label: '{{ product.name }}'
+                    parent: 'assortment.list',
+                    label: '{{ country.name }}'
+                }
+            })
+            .state('assortment.producer', {
+                url: '/produsenter/{producerId:int}',
+                templateUrl: 'static/app/assortment/assortment.details.view.html',
+                controller: function ($scope, $stateParams, Producer) {
+                    $scope.filters = {
+                        producer: $stateParams.producerId
+                    };
+
+                    $scope.producer = Producer.get({ id: $stateParams.producerId}, function (producer) {
+                        $scope.title = producer.name;
+                    });
+                },
+                ncyBreadcrumb: {
+                    parent: 'assortment.list',
+                    label: '{{ producer.name }}'
                 }
             })
             .state('statistics', {

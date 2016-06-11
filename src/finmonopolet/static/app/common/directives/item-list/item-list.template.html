@@ -1,4 +1,9 @@
-<h2 ng-if="title" ng-bind="title"></h2>
+<!-- Heading -->
+<div class="row">
+    <div class="col-md-offset-3 col-md-9 col-sm-12">
+        <h2 ng-if="title" ng-bind="title"></h2>
+    </div>
+</div>
 
 <!-- Filtering -->
 <div class="row">
@@ -181,9 +186,13 @@
                             <a ui-sref="assortment.category({categoryId: item.category.id})">
                                 <span>{{ item.category.name }}</span>
                             </a>
-                            ({{ item.country.name }})<br />
+                            (<a class="item-details"
+                                ui-sref="assortment.country({countryId: item.country.id})">{{ item.country.name }}</a>)
+                            <br />
                             <span ng-if="item.producer">
-                                {{ item.producer.name }}
+                                <a class="item-details" ui-sref="assortment.producer({producerId: item.producer.id})">
+                                    {{ item.producer.name }}
+                                </a>
                             </span>
                             <span ng-if="!item.producer">
                                 Produsent ikke oppgitt
