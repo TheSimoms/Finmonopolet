@@ -20,26 +20,53 @@ from finmonopolet.update_database import read_string, read_float, read_integer, 
 from store.models import Store
 
 
+def read_opening_times_week(week_number):
+    if week_number is None:
+        week_number = 0
+
+    return week_number
+
+
+def read_opening_times_hours(opening_hours):
+    if opening_hours is None:
+        opening_hours = 'Stengt'
+
+    return opening_hours
+
 def store_info_to_store(store_info):
     opening_times = {
-        'week_number': read_integer(store_info['Ukenummer']),
+        'week_number': read_opening_times_week(
+            read_integer(store_info['Ukenummer'], True)),
 
-        'monday': read_string(store_info['Apn_mandag']),
-        'tuesday': read_string(store_info['Apn_tirsdag']),
-        'wednesday': read_string(store_info['Apn_onsdag']),
-        'thursday': read_string(store_info['Apn_torsdag']),
-        'friday': read_string(store_info['Apn_fredag']),
-        'saturday': read_string(store_info['Apn_lordag']),
+        'monday': read_opening_times_hours(
+            read_string(store_info['Apn_mandag'], True)),
+        'tuesday': read_opening_times_hours(
+            read_string(store_info['Apn_tirsdag'], True)),
+        'wednesday': read_opening_times_hours(
+            read_string(store_info['Apn_onsdag'], True)),
+        'thursday': read_opening_times_hours(
+            read_string(store_info['Apn_torsdag'], True)),
+        'friday': read_opening_times_hours(
+            read_string(store_info['Apn_fredag'], True)),
+        'saturday': read_opening_times_hours(
+            read_string(store_info['Apn_lordag'], True)),
     }
     opening_times_next = {
-        'week_number': read_integer(store_info['Ukenummer_neste']),
+        'week_number': read_opening_times_week(
+            read_integer(store_info['Ukenummer_neste'], True)),
 
-        'monday': read_string(store_info['Apn_neste_mandag']),
-        'tuesday': read_string(store_info['Apn_neste_tirsdag']),
-        'wednesday': read_string(store_info['Apn_neste_onsdag']),
-        'thursday': read_string(store_info['Apn_neste_torsdag']),
-        'friday': read_string(store_info['Apn_neste_fredag']),
-        'saturday': read_string(store_info['Apn_neste_lordag']),
+        'monday': read_opening_times_hours(
+            read_string(store_info['Apn_neste_mandag'], True)),
+        'tuesday': read_opening_times_hours(
+            read_string(store_info['Apn_neste_tirsdag'], True)),
+        'wednesday': read_opening_times_hours(
+            read_string(store_info['Apn_neste_onsdag'], True)),
+        'thursday': read_opening_times_hours(
+            read_string(store_info['Apn_neste_torsdag'], True)),
+        'friday': read_opening_times_hours(
+            read_string(store_info['Apn_neste_fredag'], True)),
+        'saturday': read_opening_times_hours(
+            read_string(store_info['Apn_neste_lordag'], True)),
     }
 
     return {
