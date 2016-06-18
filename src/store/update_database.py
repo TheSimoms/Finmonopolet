@@ -4,6 +4,8 @@ import sys
 import django
 import logging
 import math
+import datetime
+
 
 try:
     from urllib2 import urlopen
@@ -26,7 +28,7 @@ from store.models import Store
 
 def read_opening_times_week(week_number):
     if week_number is None:
-        week_number = 0
+        week_number = -1
 
     return week_number
 
@@ -36,6 +38,7 @@ def read_opening_times_hours(opening_hours):
         opening_hours = 'Stengt'
 
     return opening_hours
+
 
 def store_info_to_store(store_info):
     opening_times = {
@@ -72,6 +75,16 @@ def store_info_to_store(store_info):
         'saturday': read_opening_times_hours(
             read_string(store_info['Apn_neste_lordag'], True)),
     }
+
+    # Correct for missing week numbers
+    if opening_times['week_number'] == -1 or opening_times_next['week_number'] == -1:
+        if opening_times['week_number'] == -1 and opening_times_next['week_number'] != -1:
+            opening_times['week_number'] = opening_times_next['week_number'] - 1
+        elif opening_times['week_number'] != -1 and opening_times_next['week_number'] == -1:
+            opening_times_next['week_number'] = opening_times['week_number'] + 1
+        else:
+            opening_times['week_number'] = current_week_number
+            opening_times_next['week_number'] = current_week_number + 1
 
     return {
         'name': read_string(store_info['Butikknavn']),
@@ -139,4 +152,6 @@ def update_stores():
 
 
 if __name__ == '__main__':
+    current_week_number = datetime.datetime.utcnow().isocalendar()[1]
+
     update_stores()

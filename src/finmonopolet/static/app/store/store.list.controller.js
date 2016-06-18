@@ -23,7 +23,15 @@ app.controller('StoreListCtrl', function ($scope, Store, stores, storeLocations,
         'saturday'
     ];
 
-    $scope.getOpeningTimes = function (openingTimesDict, weekday) {
+    $scope.getOpeningTimes = function (store, weekday) {
+        var openingTimesDict = store.opening_times;
+
+        if (weekday >= 7) {
+            openingTimesDict = store.opening_times_next;
+
+            weekday = weekday % 7;
+        }
+
         var openingTimes = openingTimesDict[weekdays[weekday]];
 
         if (!openingTimes) {

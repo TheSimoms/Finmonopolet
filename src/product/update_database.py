@@ -6,6 +6,7 @@ import logging
 import math
 import datetime
 
+
 try:
     from urllib2 import urlopen
 except ImportError:

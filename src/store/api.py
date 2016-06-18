@@ -25,7 +25,7 @@ class StoreSerializer(serializers.ModelSerializer):
 
 class StoreListSerializer(StoreSerializer):
     class Meta(StoreSerializer.Meta):
-        fields = ('id', 'name', 'address', 'zip_code', 'postal', 'opening_times', )
+        fields = ('id', 'name', 'address', 'zip_code', 'postal', 'opening_times', 'opening_times_next', )
 
 
 class StoreLocationSerializer(serializers.ModelSerializer):
