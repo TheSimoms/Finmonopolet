@@ -1,10 +1,14 @@
-import urllib.request
 import csv
 import os
 import sys
 import django
 import logging
 import math
+
+try:
+    from urllib2 import urlopen
+except ImportError:
+    from urllib.request import urlopen
 
 from django.db import transaction
 
@@ -93,40 +97,45 @@ def update_stores():
     """
     logging.info('Starting store database update')
 
-    with urllib.request.urlopen(
-            # FIXME: Change back when redirect is in place. http://www.vinmonopolet.no/api/butikker
-            'https://www.vinmonopolet.no/medias/sys_master/locations/locations/h3c/h4a/8834253946910.csv'
-    ) as f:
-        f = f.read().decode('iso-8859-1').split('\r\n')
+    data = urlopen(
+        # FIXME: Change back when redirect is in place. http://www.vinmonopolet.no/api/butikker
+        'https://www.vinmonopolet.no/medias/sys_master/locations/locations/h3c/h4a/8834253946910.csv'
+    ).read().decode('iso-8859-1')
 
-        logging.info('Remote database read. Updating local database.')
+    # FIXME: Maybe to this otherwise
+    if type(data) is not str:
+        data = data.encode('utf8')
 
-        reader = list(csv.DictReader(f[1:], delimiter=';', fieldnames=f[0].split(';')))
+    data = data.split('\r\n')
 
-        # Used for logging progress
-        number_of_items = len(reader)
-        logging_interval = math.ceil(number_of_items / 100)
-        i = 0
+    logging.info('Remote database read. Updating local database.')
 
-        for store_info in reader:
-            store_info = store_info_to_store(store_info)
+    reader = list(csv.DictReader(data[1:], delimiter=';', fieldnames=data[0].split(';')))
 
-            try:
-                store = Store.objects.get(name=store_info['name'])
+    # Used for logging progress
+    number_of_items = len(reader)
+    logging_interval = math.ceil(number_of_items / 100)
+    i = 0
 
-                for key, value in store_info.items():
-                    setattr(store, key, value)
+    for store_info in reader:
+        store_info = store_info_to_store(store_info)
 
-                store.save()
-            except Store.DoesNotExist:
-                Store.objects.create(**store_info)
+        try:
+            store = Store.objects.get(name=store_info['name'])
 
-            i += 1
+            for key, value in store_info.items():
+                setattr(store, key, value)
 
-            if i % logging_interval == 0:
-                logging.info('%.2f%% complete' % int(i / number_of_items * 100))
+            store.save()
+        except Store.DoesNotExist:
+            Store.objects.create(**store_info)
 
-        logging.info('Database update complete')
+        i += 1
+
+        if i % logging_interval == 0:
+            logging.info('%.2f%% complete' % int(i / number_of_items * 100))
+
+    logging.info('Database update complete')
 
 
 if __name__ == '__main__':

@@ -1,4 +1,3 @@
-import urllib.request
 import csv
 import os
 import sys
@@ -6,6 +5,11 @@ import django
 import logging
 import math
 import datetime
+
+try:
+    from urllib2 import urlopen
+except ImportError:
+    from urllib.request import urlopen
 
 from django.db import transaction
 
@@ -139,44 +143,49 @@ def update_products():
     """
     logging.info('Starting product database update')
 
-    with urllib.request.urlopen(
-            # FIXME: Change back when redirect is in place. http://www.vinmonopolet.no/api/produkter
-            'https://www.vinmonopolet.no/medias/sys_master/products/products/hbc/hb0/8834253127710/produkter.csv'
-    ) as f:
-        f = f.read().decode('iso-8859-1').split('\r\n')
+    data = urlopen(
+        # FIXME: Change back when redirect is in place. http://www.vinmonopolet.no/api/produkter
+        'https://www.vinmonopolet.no/medias/sys_master/products/products/hbc/hb0/8834253127710/produkter.csv'
+    ).read().decode('iso-8859-1')
 
-        logging.info('Remote database read. Updating local database.')
+    # FIXME: Maybe to this otherwise
+    if type(data) is not str:
+        data = data.encode('utf8')
 
-        reader = list(csv.DictReader(f[1:], delimiter=';', fieldnames=f[0].split(';')))
+    data = data.split('\r\n')
 
-        # Used for logging progress
-        number_of_items = len(reader)
-        logging_interval = math.ceil(number_of_items / 100)
-        i = 0
+    logging.info('Remote database read. Updating local database.')
 
-        for product_info in reader:
-            product_info, suits = product_info_to_product(product_info)
+    reader = list(csv.DictReader(data[1:], delimiter=';', fieldnames=data[0].split(';')))
 
-            try:
-                product = Product.objects.get(product_number=product_info['product_number'])
+    # Used for logging progress
+    number_of_items = len(reader)
+    logging_interval = math.ceil(number_of_items / 100)
+    i = 0
 
-                product.active = False
+    for product_info in reader:
+        product_info, suits = product_info_to_product(product_info)
 
-                for key, value in product_info.items():
-                    setattr(product, key, value)
-            except Product.DoesNotExist:
-                product = Product.objects.create(**product_info)
+        try:
+            product = Product.objects.get(product_number=product_info['product_number'])
 
-            product.suits = suits
+            product.active = False
 
-            product.save()
+            for key, value in product_info.items():
+                setattr(product, key, value)
+        except Product.DoesNotExist:
+            product = Product.objects.create(**product_info)
 
-            i += 1
+        product.suits = suits
 
-            if i % logging_interval == 0:
-                logging.info('%.2f%% complete' % int(i / number_of_items * 100))
+        product.save()
 
-        logging.info('Database update complete')
+        i += 1
+
+        if i % logging_interval == 0:
+            logging.info('%.2f%% complete' % int(i / number_of_items * 100))
+
+    logging.info('Database update complete')
 
 
 if __name__ == '__main__':

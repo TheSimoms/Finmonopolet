@@ -19,4 +19,4 @@ class BaseModel(models.Model):
         self.canonical_name = self.name.lower()
         self.slug = slugify(self.name)
 
-        super().save(*args, **kwargs)
+        super(BaseModel, self).save(*args, **kwargs)
