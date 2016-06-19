@@ -1,14 +1,26 @@
 import sys
 import os
 import logging
+import csv
 
 import django
+
+from urllib.request import urlopen
 
 
 sys.path.append(os.path.abspath(os.path.join('/'.join(__file__.split('/')[:-1]), os.pardir)))
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'finmonopolet.settings')
 
 django.setup()
+
+
+def read_csv_from_url(url):
+    with urlopen(url) as response:
+        data = response.read().decode('iso-8859-1').split('\r\n')
+
+        logging.info('Remote database read. Updating local database.')
+
+        return list(csv.DictReader(data[1:], delimiter=';', fieldnames=data[0].split(';')))
 
 
 def read_value(value, optional=False):

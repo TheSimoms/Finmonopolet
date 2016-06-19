@@ -1,16 +1,9 @@
-import csv
 import os
 import sys
 import django
 import logging
 import math
 import datetime
-
-
-try:
-    from urllib2 import urlopen
-except ImportError:
-    from urllib.request import urlopen
 
 from django.db import transaction
 
@@ -21,7 +14,7 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'finmonopolet.settings')
 django.setup()
 
 
-from finmonopolet.update_database import read_string, read_float, read_integer, read_store_category
+from finmonopolet.update_database import read_csv_from_url, read_string, read_float, read_integer, read_store_category
 
 from product.models import Product, Category, Country, Producer, Suits, Selection
 
@@ -144,20 +137,10 @@ def update_products():
     """
     logging.info('Starting product database update')
 
-    data = urlopen(
+    reader = read_csv_from_url(
         # FIXME: Change back when redirect is in place. http://www.vinmonopolet.no/api/produkter
         'https://www.vinmonopolet.no/medias/sys_master/products/products/hbc/hb0/8834253127710/produkter.csv'
-    ).read().decode('iso-8859-1')
-
-    # FIXME: Maybe to this otherwise
-    if type(data) is not str:
-        data = data.encode('utf8')
-
-    data = data.split('\r\n')
-
-    logging.info('Remote database read. Updating local database.')
-
-    reader = list(csv.DictReader(data[1:], delimiter=';', fieldnames=data[0].split(';')))
+    )
 
     # Used for logging progress
     number_of_items = len(reader)

@@ -39,9 +39,9 @@ class StoreViewSet(viewsets.ReadOnlyModelViewSet):
 
     pagination_class = StoreListPagination
 
-    ordering_fields = ('name', 'zip_code', 'postal', )
+    ordering_fields = ('canonical_name', 'zip_code', 'postal', )
     search_fields = (
-        'name', 'address', 'zip_code', 'postal',
+        'canonical_name', 'address', 'zip_code', 'postal',
     )
 
     def get_serializer_class(self):
