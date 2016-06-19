@@ -9,16 +9,8 @@
 <div class="row">
     <!-- Search -->
     <div class="col-md-offset-3 col-md-3 col-sm-6 col-xs-12">
-        <form ng-submit="search(searchString)">
-            <div class="input-group">
-                <input type="text" class="form-control" ng-model="searchString" placeholder="Søk...">
-                <span class="input-group-btn">
-                    <button class="btn btn-default" type="button" ng-click="search(searchString)">
-                        <i class="fa fa-search"></i>
-                    </button>
-                </span>
-            </div>
-        </form>
+        <input type="text" class="form-control" placeholder="Søk..." ng-model="searchString"
+               ng-model-options="{ debounce: 500 }" ng-change="search(searchString)">
     </div>
 
     <div class="col-xs-12 visible-xs margin-bottom-small"></div>
@@ -113,6 +105,15 @@
                             </div>
                         </uib-accordion-heading>
 
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <form>
+                                    <input type="text" class="form-control" placeholder="Søk..."
+                                           ng-model="filter.filtering.search" ng-model-options="{ debounce: 500 }">
+                                </form>
+                            </div>
+                        </div>
+
                         <div class="row filter-list-container">
                             <div class="list-group">
                                 <!-- Item list -->
@@ -139,7 +140,7 @@
                         </div>
 
                         <custom-pagination model="filter.data" resource="filter.resource" items-per-page="5"
-                                           number-of-pages="5">
+                                           number-of-pages="5" current-page="filter.filtering.page">
                         </custom-pagination>
                     </uib-accordion-group>
 
@@ -158,17 +159,17 @@
                         <div class="form">
                             <div class="form-group">
                                 <div class="input-group">
-                                    <input type="text" class="form-control" ng-model="filter.values[0]"
-                                           placeholder="Minimum"
-                                           ng-keyup="$event.keyCode == 13 && updateRangeFilter(filter, filterLabel)">
+                                    <input type="text" class="form-control" placeholder="Minimum"
+                                           ng-model="filter.values[0]" ng-model-options="{ debounce: 500 }"
+                                           ng-change="updateRangeFilter(filter, filterLabel)">
                                     <div class="input-group-addon">{{ filter.unit }}</div>
                                 </div>
                             </div>
                             <div class="form-group">
                                 <div class="input-group">
-                                    <input type="text" class="form-control" ng-model="filter.values[1]"
-                                           placeholder="Maksimum"
-                                           ng-keyup="$event.keyCode == 13 && updateRangeFilter(filter, filterLabel)">
+                                    <input type="text" class="form-control" placeholder="Maksimum"
+                                           ng-model="filter.values[1]" ng-model-options="{ debounce: 500 }"
+                                           ng-change="updateRangeFilter(filter, filterLabel)">
                                     <div class="input-group-addon">{{ filter.unit }}</div>
                                 </div>
                             </div>
@@ -187,7 +188,7 @@
 
     <!-- Items -->
     <div class="col-md-9 col-xs-12">
-        <div class="row" ng-show="model.$resolved">
+        <div class="row" ng-show="!loading">
             <div ng-repeat="item in model.results">
                 <div class="clearfix visible-md visible-lg" ng-if="$index % 3 == 0"></div>
                 <div class="clearfix visible-xs visible-sm" ng-if="$index % 2 == 0"></div>
@@ -238,7 +239,7 @@
         </div>
 
         <!-- Loading -->
-        <div ng-show="!model.$resolved" class="text-center margin-top">
+        <div ng-show="loading" class="text-center margin-top">
             <i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i>
             <span class="sr-only">Laster...</span>
         </div>

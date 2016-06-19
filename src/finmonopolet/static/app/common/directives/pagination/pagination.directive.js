@@ -16,7 +16,7 @@ app.directive('customPagination', function () {
             $scope.numberOfPages = $scope.numberOfPages || 20;
 
             $scope.$watch('model', function (newVal) {
-                if (newVal.$resolved) {
+                if (typeof newVal !== 'undefined' && newVal.$resolved) {
                     $scope.totalItems = $scope.model.count;
                 }
             }, true);
@@ -31,9 +31,17 @@ app.directive('customPagination', function () {
             if (typeof $scope.currentPage === 'undefined') {
                 $scope.currentPage = 1;
 
+                var filterCounter = 0;
+
                 $scope.$watch('currentPage', function (newVal) {
+                    filterCounter = (filterCounter + 1) % 100;
+
+                    var currentCounter = filterCounter;
+
                     $scope.resource.get({page: newVal}, function (data) {
-                        $scope.model = data;
+                        if (currentCounter === filterCounter) {
+                            $scope.model = data;
+                        }
                     });
                 });
             }

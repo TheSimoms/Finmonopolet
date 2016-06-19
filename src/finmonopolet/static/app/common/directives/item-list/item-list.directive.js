@@ -9,11 +9,10 @@ app.directive('itemList', function ($q, $timeout, Product, Category, Country, Pr
         templateUrl: 'static/app/common/directives/item-list/item-list.template.html',
         link: function ($scope) {
             $scope.resource = Product;
-
-            $scope.filterCounter = 0;
             $scope.numberOfSelectedFilters = 0;
 
             $scope.filtering = $scope.lockedFilters || {};
+            $scope.loading = true;
 
             $scope.itemsPerPage = $scope.itemsPerPage || 12;
             $scope.currentPage = 1;
@@ -29,8 +28,6 @@ app.directive('itemList', function ($q, $timeout, Product, Category, Country, Pr
                 page: 1
             });
 
-            $scope.model = $scope.resource.get($scope.filtering);
-
             $scope.orderingFields = {
                 'canonical_name': 'Navn',
                 'category': 'Varegruppe',
@@ -43,45 +40,32 @@ app.directive('itemList', function ($q, $timeout, Product, Category, Country, Pr
                 'alcohol_price': 'Pris pr. %'
             };
 
+            function listFilter (title, filter_name, resource) {
+                return {
+                    title: title, filter_name: filter_name, resource: resource, data: [], selected: [],
+                    filtering: { search: '', page: 1 }, counter: 0
+                };
+            }
+
+            function rangeFilter (title, filter_name, unit) {
+                return  {
+                    title: title, filter_name: filter_name, unit: unit, displayText: '', values: ['', '']
+                };
+            }
+
             $scope.filters = {
-                category: {
-                    title: 'Varegruppe', filter_name: 'category', resource: Category, data: [], selected: []
-                },
-                country: {
-                    title: 'Land', filter_name: 'country', resource: Country, data: [], selected: []
-                },
-                producer: {
-                    title: 'Produsent', filter_name: 'producer', resource: Producer, data: [], selected: []
-                },
-                suits: {
-                    title: 'Passer til', filter_name: 'suits', resource: Suits, data: [], selected: []
-                },
-                selection: {
-                    title: 'Produktutvalg', filter_name: 'selection', resource: Selection, data: [], selected: []
-                }
+                category: listFilter('Varegruppe', 'category', Category),
+                producer: listFilter('Produsent', 'producer', Producer),
+                suits: listFilter('Passer til', 'suits', Suits),
+                selection: listFilter('Produktutvalg', 'selection', Selection)
             };
 
             $scope.rangeFilters = {
-                price: {
-                    title: 'Pris', unit: ',-', displayText: '',
-                    type: 'range', values: ['', '']
-                },
-                volume: {
-                    title: 'Volum',  unit: ' l', displayText: true,
-                    type: 'range', values: ['', '']
-                },
-                alcohol: {
-                    title: 'Alkoholinnhold',  unit: ' %', displayText: true,
-                    type: 'range', values: ['', '']
-                },
-                litre_price: {
-                    title: 'Pris pr. liter',  unit: ',- pr. l', displayText: true,
-                    type: 'range', values: ['', '']
-                },
-                alcohol_price: {
-                    title: 'Pris pr. %',  unit: ',- pr. %', displayText: true,
-                    type: 'range', values: ['', '']
-                }
+                price: rangeFilter('Pris', 'price', ',-'),
+                volume: rangeFilter('Volum', 'volume', ' l'),
+                alcohol: rangeFilter('Alkoholinnhold', 'alcohol', ' %'),
+                litre_price: rangeFilter('Pris pr. liter', 'litre_price', ',- pr. l'),
+                alcohol_price: rangeFilter('Pris pr. %', 'alcohol_price', ',- pr. %')
             };
 
             if (typeof $scope.lockedFilters !== 'undefined') {
@@ -89,10 +73,6 @@ app.directive('itemList', function ($q, $timeout, Product, Category, Country, Pr
                     delete $scope.filters[filter];
                 });
             }
-
-            $scope.search = function (search) {
-                $scope.filtering.search = search.toLowerCase();
-            };
 
             $scope.updateListFilter = function (filter, item) {
                 var index = filter.selected.indexOf(item);
@@ -116,7 +96,7 @@ app.directive('itemList', function ($q, $timeout, Product, Category, Country, Pr
                 }
             };
 
-            var setFilterString = function (filter) {
+            function setFilterString (filter) {
                 var filterValues = [parseFloat(filter.values[0]), parseFloat(filter.values[1])];
 
                 filter.displayText = '';
@@ -130,7 +110,7 @@ app.directive('itemList', function ($q, $timeout, Product, Category, Country, Pr
                         filter.displayText = filterValues[0] + ' - ' + filterValues[1];
                     }
                 }
-            };
+            }
 
             $scope.updateRangeFilter = function (filter, filterLabel) {
                 var queryString = filterLabel + '__';
@@ -216,20 +196,58 @@ app.directive('itemList', function ($q, $timeout, Product, Category, Country, Pr
                 return filter.selected.indexOf(item) !== -1;
             };
 
-            function filter () {
-                $scope.filterCounter = ($scope.filterCounter + 1) % 100;
+            var globalFilterCounter = 0;
 
-                var filterCounter = $scope.filterCounter;
+            function filter () {
+                globalFilterCounter = (globalFilterCounter + 1) % 100;
+
+                var currentCounter = globalFilterCounter;
+
+                $scope.loading = true;
 
                 $scope.resource.get($scope.filtering, function (data) {
-                    if ($scope.filterCounter == filterCounter) {
+                    if (globalFilterCounter === currentCounter) {
+                        $scope.loading = false;
+
                         $scope.model = data;
                     }
                 });
             }
 
+            $scope.search = function (search) {
+                $scope.filtering.search = search.toLowerCase();
+            };
+
+            angular.forEach($scope.filters, function (filter, filterLabel) {
+                var filterTimeoutPromise;
+
+                $scope.$watch('filters.' + filterLabel + '.filtering', function (newVal, oldVal) {
+                    $timeout.cancel(filterTimeoutPromise);
+
+                    filterTimeoutPromise = $timeout(function() {
+                        if (newVal.search !== oldVal.search) {
+                            if (newVal.page !== 1) {
+                                newVal.page = 1;
+
+                                return;
+                            }
+                        }
+
+                        filter.counter = (filter.counter + 1) % 100;
+
+                        var currentCounter = filter.counter;
+
+                        filter.resource.get(filter.filtering, function (data) {
+                            if (currentCounter === filter.counter) {
+                                filter.data = data;
+                            }
+                        });
+                    }, 100);
+                }, true);
+            });
+
             $scope.$watch('ordering', function (newVal, oldVal) {
-                if (newVal != oldVal) {
+                if (!angular.equals(newVal, oldVal)) {
                     $scope.filtering.ordering = ($scope.ordering.ascending ? '' : '-') + $scope.ordering.field;
                 }
             }, true);
@@ -237,25 +255,23 @@ app.directive('itemList', function ($q, $timeout, Product, Category, Country, Pr
             var timeoutPromise;
 
             $scope.$watch('[filtering, currentPage]', function (newVal, oldVal) {
-                if (newVal != oldVal) {
-                    $timeout.cancel(timeoutPromise);
+                $timeout.cancel(timeoutPromise);
 
-                    timeoutPromise = $timeout(function() {
-                        if (newVal[1] != oldVal[1]) {
-                            $scope.filtering.page = $scope.currentPage;
+                timeoutPromise = $timeout(function() {
+                    if (newVal[1] !== oldVal[1]) {
+                        $scope.filtering.page = $scope.currentPage;
+                    } else {
+                        if (newVal[0].page !== oldVal[0].page) {
+                            filter();
                         } else {
-                            if (newVal[0].page != oldVal[0].page) {
-                                filter();
+                            if ($scope.currentPage !== 1) {
+                                $scope.currentPage = 1;
                             } else {
-                                if ($scope.currentPage != 1) {
-                                    $scope.currentPage = 1;
-                                } else {
-                                    filter();
-                                }
+                                filter();
                             }
                         }
-                    }, 100);
-                }
+                    }
+                }, 100);
             }, true);
         }
     };
