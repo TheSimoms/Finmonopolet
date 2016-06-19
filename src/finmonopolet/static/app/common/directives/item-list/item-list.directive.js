@@ -11,6 +11,7 @@ app.directive('itemList', function ($q, $timeout, Product, Category, Country, Pr
             $scope.resource = Product;
 
             $scope.filterCounter = 0;
+            $scope.numberOfSelectedFilters = 0;
 
             $scope.filtering = $scope.lockedFilters || {};
 
@@ -98,8 +99,12 @@ app.directive('itemList', function ($q, $timeout, Product, Category, Country, Pr
 
                 if (index >= 0) {
                     filter.selected.splice(index, 1);
+
+                    $scope.numberOfSelectedFilters -= 1;
                 } else {
                     filter.selected.push(item);
+
+                    $scope.numberOfSelectedFilters += 1;
                 }
 
                 if (filter.selected.length == 0) {
@@ -146,20 +151,29 @@ app.directive('itemList', function ($q, $timeout, Product, Category, Country, Pr
                     }
                 }
 
+                var hasOldFilter = false;
+
                 for (var oldFilterLabel in $scope.filtering) {
                     if ($scope.filtering.hasOwnProperty(oldFilterLabel) && oldFilterLabel.startsWith(filterLabel)) {
                         delete $scope.filtering[oldFilterLabel];
+
+                        hasOldFilter = true;
 
                         break;
                     }
                 }
 
-                setFilterString(filter);
-
                 if (typeof queryValue !== 'undefined') {
                     $scope.filtering[queryString] = queryValue;
 
+                    if (!hasOldFilter) {
+                        $scope.numberOfSelectedFilters += 1;
+                    }
+                } else if (hasOldFilter) {
+                    $scope.numberOfSelectedFilters -= 1;
                 }
+
+                setFilterString(filter);
             };
 
             var clearListFilters = function () {
@@ -173,6 +187,8 @@ app.directive('itemList', function ($q, $timeout, Product, Category, Country, Pr
             $scope.clearRangeFilter = function (filter, filterLabel) {
                 filter.values = ['', ''];
                 filter.displayText = '';
+
+                $scope.numberOfSelectedFilters -= 1;
 
                 for (var oldFilterLabel in $scope.filtering) {
                     if ($scope.filtering.hasOwnProperty(oldFilterLabel) && oldFilterLabel.startsWith(filterLabel)) {
@@ -192,6 +208,8 @@ app.directive('itemList', function ($q, $timeout, Product, Category, Country, Pr
             $scope.clearFilters = function () {
                 clearListFilters();
                 clearRangeFilters();
+
+                $scope.numberOfSelectedFilters = 0;
             };
 
             $scope.itemSelected = function (filter, item) {

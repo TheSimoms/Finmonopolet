@@ -21,7 +21,7 @@
         </form>
     </div>
 
-    <div class="col-xs-12 margin-bottom-small visible-xs"></div>
+    <div class="col-xs-12 visible-xs margin-bottom-small"></div>
 
     <!-- Ordering -->
     <div class="col-md-3 col-sm-6 col-xs-12">
@@ -50,43 +50,56 @@
     <!-- Filtering -->
     <div class="col-md-3 col-xs-12">
         <!-- Selected filters -->
-        <div class="list-group">
-            <!-- List filters -->
-            <div ng-repeat="filter in filters">
-                <a class="list-group-item interact" ng-repeat="item in filter.selected"
-                   ng-click="updateListFilter(filter, item)">
-                    {{ filter.title }}: {{ item.name }}
-                    <span class="badge">
-                        <i class="fa fa-times pull-right"></i>
-                    </span>
-                </a>
-            </div>
+        <div ng-show="numberOfSelectedFilters > 0" ng-init="selectedFiltersCollapse = false;">
+            <h4 ng-click="selectedFiltersCollapse = !selectedFiltersCollapse;" class="visible-xs visible-sm interact">
+                Valgte filtre
 
-            <!-- Range filters -->
-            <div ng-repeat="(filterLabel, filter) in rangeFilters">
-                <a class="list-group-item interact" ng-show="filter.displayText.length > 0"
-                   ng-click="clearRangeFilter(filter, filterLabel)">
-                    {{ filter.title }}: {{ filter.displayText }}{{ filter.unit }}
-                    <span class="badge">
-                        <i class="fa fa-times pull-right"></i>
-                    </span>
-                </a>
+                <i class="fa fa-plus pull-right" ng-show="selectedFiltersCollapse"></i>
+                <i class="fa fa-minus pull-right" ng-show="!selectedFiltersCollapse"></i>
+            </h4>
+
+            <h4 class="hidden-xs hidden-sm">
+                Valgte filtre
+            </h4>
+
+            <div class="list-group filter-container" uib-collapse="selectedFiltersCollapse">
+                <!-- List filters -->
+                <div ng-repeat="filter in filters">
+                    <a class="list-group-item interact" ng-repeat="item in filter.selected"
+                       ng-click="updateListFilter(filter, item)">
+                        {{ filter.title }}: {{ item.name }}
+                        <span class="badge">
+                            <i class="fa fa-times pull-right"></i>
+                        </span>
+                    </a>
+                </div>
+
+                <!-- Range filters -->
+                <div ng-repeat="(filterLabel, filter) in rangeFilters">
+                    <a class="list-group-item interact" ng-show="filter.displayText.length > 0"
+                       ng-click="clearRangeFilter(filter, filterLabel)">
+                        {{ filter.title }}: {{ filter.displayText }}{{ filter.unit }}
+                        <span class="badge">
+                            <i class="fa fa-times pull-right"></i>
+                        </span>
+                    </a>
+                </div>
             </div>
         </div>
 
-        <div ng-init="isCollapsed = true;">
-            <h4 ng-click="isCollapsed = !isCollapsed;" class="visible-xs visible-sm interact">
+        <div ng-init="filtersCollapse = true;">
+            <h4 ng-click="filtersCollapse = !filtersCollapse;" class="visible-xs visible-sm interact">
                 Tilpass resultat
 
-                <i class="fa fa-plus pull-right" ng-show="isCollapsed"></i>
-                <i class="fa fa-minus pull-right" ng-show="!isCollapsed"></i>
+                <i class="fa fa-plus pull-right" ng-show="filtersCollapse"></i>
+                <i class="fa fa-minus pull-right" ng-show="!filtersCollapse"></i>
             </h4>
 
             <h4 class="hidden-xs hidden-sm">
                 Tilpass resultat
             </h4>
 
-            <div class="nav-collapse collapse filter-container" uib-collapse="isCollapsed">
+            <div class="nav-collapse collapse filter-container" uib-collapse="filtersCollapse">
                 <uib-accordion close-others="false">
                     <!-- List filters -->
                     <uib-accordion-group is-open="isOpen" ng-repeat="(filterLabel, filter) in filters">
