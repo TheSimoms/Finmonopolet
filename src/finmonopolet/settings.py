@@ -23,7 +23,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '6t*wa(jnt@!@y(&8@h@thu0^jbxzc7o@lzs+t4drfb7k^rmq@1'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = (
     '*',
@@ -38,7 +38,6 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
 
     'rest_framework',
-    'debug_toolbar',
 
     'finmonopolet',
 
@@ -106,7 +105,7 @@ USE_TZ = True
 
 
 # Static files (CSS, JavaScript, Images)
-
+STATIC_ROOT = os.path.abspath(BASE_DIR + '/finmonopolet/static/')
 STATIC_URL = '/static/'
 
 
