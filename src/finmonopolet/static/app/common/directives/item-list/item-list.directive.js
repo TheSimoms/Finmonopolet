@@ -43,7 +43,7 @@ app.directive('itemList', function ($q, $timeout, Product, Category, Country, Pr
             function listFilter (title, filter_name, resource) {
                 return {
                     title: title, filter_name: filter_name, resource: resource, data: [], selected: [],
-                    filtering: { search: '', page: 1 }, counter: 0
+                    filtering: { search: '', page: 1 }, search: '', counter: 0
                 };
             }
 
@@ -220,6 +220,12 @@ app.directive('itemList', function ($q, $timeout, Product, Category, Country, Pr
 
             angular.forEach($scope.filters, function (filter, filterLabel) {
                 var filterTimeoutPromise;
+
+                $scope.$watch('filters.' + filterLabel + '.search', function (newVal, oldVal) {
+                    if (newVal !== oldVal) {
+                        filter.filtering.search = newVal.toLowerCase();
+                    }
+                });
 
                 $scope.$watch('filters.' + filterLabel + '.filtering', function (newVal, oldVal) {
                     $timeout.cancel(filterTimeoutPromise);
