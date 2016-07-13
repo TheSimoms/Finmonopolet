@@ -55,6 +55,7 @@ app.directive('itemList', function ($q, $timeout, Product, Category, Country, Pr
 
             $scope.filters = {
                 category: listFilter('Varegruppe', 'category', Category),
+                country: listFilter('Land', 'country', Country),
                 producer: listFilter('Produsent', 'producer', Producer),
                 suits: listFilter('Passer til', 'suits', Suits),
                 selection: listFilter('Produktutvalg', 'selection', Selection)
