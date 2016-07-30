@@ -1,3 +1,81 @@
-<h2 ng-bind="product.name"></h2>
+<div class="container">
+    <div class="page-header">
+        <h2 ng-bind="product.name"></h2>
+        <div ng-bind="product.taste"></div>
+    </div>
 
-Kommer snart...
+    <uib-tabset active="active" class="product-information">
+        <!-- Product description -->
+        <uib-tab heading="Varebeskrivelse">
+            <dl class="dl-horizontal">
+                <div ng-if="product.taste">
+                    <dt>Smak</dt>
+                    <dd ng-bind="product.taste"></dd>
+                </div>
+                <div ng-if="product.color">
+                    <dt>Farge</dt>
+                    <dd ng-bind="product.color"></dd>
+                </div>
+                <div ng-if="product.smell">
+                    <dt>Lukt</dt>
+                    <dd ng-bind="product.smell"></dd>
+                </div>
+                <div class="margin-top" ng-if="product.packaging || product.cork"></div>
+                <div ng-if="product.packaging">
+                    <dt>Emballasje</dt>
+                    <dd ng-bind="product.packaging"></dd>
+                </div>
+                <div ng-if="product.cork">
+                    <dt>Korktype</dt>
+                    <dd ng-bind="product.cork"></dd>
+                </div>
+                <div class="margin-top" ng-if="product.production_method || product.storage"></div>
+                <div ng-if="product.production_method">
+                    <dt>Produksjonsmetode</dt>
+                    <dd ng-bind="product.production_method"></dd>
+                </div>
+                <div ng-if="product.storage">
+                    <dt>Oppbevaring</dt>
+                    <dd ng-bind="product.storage"></dd>
+                </div>
+            </dl>
+        </uib-tab>
+
+        <!-- Product content -->
+        <uib-tab heading="Innhold">
+            <dl class="dl-horizontal">
+                <div ng-if="product.alcohol">
+                    <dt>Alkoholprosent</dt>
+                    <dd ng-bind="product.alcohol + '%'"></dd>
+                </div>
+                <div class="margin-top" ng-if="product.sugar || product.acid"></div>
+                <div ng-if="product.sugar">
+                    <dt>Sukker</dt>
+                    <dd ng-bind="product.sugar + ' gram pr. liter'"></dd>
+                </div>
+                <div ng-if="product.acid">
+                    <dt>Syre</dt>
+                    <dd ng-bind="product.acid + ' gram pr. liter'"></dd>
+                </div>
+                <div class="margin-top" ng-if="product.feedstock">
+                    <dt>Råvarer</dt>
+                    <dd ng-bind="product.feedstock"></dd>
+                </div>
+            </dl>
+        </uib-tab>
+
+        <!-- Product store and proiducer information -->
+        <uib-tab heading="Butikkinformasjon">
+            <dl class="dl-horizontal">
+                <div ng-if="product.selection">
+                    <dt>Butikkutvalg</dt>
+                    <dd ng-bind="product.selection.name"></dd>
+                </div>
+                <div ng-if="product.store_category">
+                    <dt>Butikkategori</dt>
+                    <dd ng-bind="product.store_category.name"></dd>
+                </div>
+            </dl>
+        </uib-tab>
+    </uib-tabset>
+</div>
