@@ -47,9 +47,7 @@ INSTALLED_APPS = (
 )
 
 MIDDLEWARE_CLASSES = (
-    'django.middleware.cache.UpdateCacheMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.cache.FetchFromCacheMiddleware',
 )
 
 ROOT_URLCONF = 'finmonopolet.urls'
@@ -77,17 +75,6 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
-}
-
-
-# Cache
-
-CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
-        'LOCATION': 'cache',
-        'TIMEOUT': 3600
     }
 }
 
