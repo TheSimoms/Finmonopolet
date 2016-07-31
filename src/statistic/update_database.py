@@ -33,9 +33,6 @@ def new_statistics_collection(item=None):
     statistics = {
         'count': {
             'items': 0,
-
-            'category': defaultdict(int),
-            'country': defaultdict(int),
         },
 
         'volume': new_statistics_element(),
@@ -47,8 +44,13 @@ def new_statistics_collection(item=None):
 
     if isinstance(item, Category):
         statistics['category'] = item
+        statistics['count']['country'] = defaultdict(int)
     elif isinstance(item, Country):
         statistics['country'] = item
+        statistics['count']['category'] = defaultdict(int)
+    else:
+        statistics['count']['country'] = defaultdict(int)
+        statistics['count']['category'] = defaultdict(int)
 
     return statistics
 
@@ -72,11 +74,14 @@ def update_statistics_element(statistics_collection, field, product, data_type=f
 def update_statistics_collection(statistics_collection, product):
     statistics_collection['count']['items'] += 1
 
-    if 'category' not in statistics_collection:
-        statistics_collection['count']['country'][product.country.id] += 1
+    if 'category' in statistics_collection:
+        statistics_collection['count']['country'][product.country.name] += 1
+    elif 'country' in statistics_collection:
+        statistics_collection['count']['category'][product.category.name] += 1
+    else:
+        statistics_collection['count']['country'][product.country.name] += 1
+        statistics_collection['count']['category'][product.category.name] += 1
 
-    if 'country' not in statistics_collection:
-        statistics_collection['count']['category'][product.category.id] += 1
 
     update_statistics_element(statistics_collection, 'volume', product)
     update_statistics_element(statistics_collection, 'price', product)
