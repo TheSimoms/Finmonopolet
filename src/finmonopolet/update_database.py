@@ -84,9 +84,11 @@ def update_database():
 
     from product.update_database import update_products
     from store.update_database import update_stores
+    from statistic.update_database import update_statistics
 
     update_products()
     update_stores()
+    update_statistics()
 
 
 if __name__ == '__main__':
