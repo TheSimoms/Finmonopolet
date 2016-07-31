@@ -115,7 +115,7 @@ app.config(
                 controller: 'StatisticsCtrl',
                 resolve: {
                     statistics: function (Statistics) {
-                        return Statistics.get();
+                        return Statistics.query();
                     },
                     category: function (Category) {
                         return Category.get();
@@ -138,7 +138,7 @@ app.config(
                         return Country.get({id: $stateParams['countryId']});
                     },
                     statistics: function ($stateParams, Statistics) {
-                        return Statistics.get({country: $stateParams['countryId']});
+                        return Statistics.query({country: $stateParams['countryId']});
                     }
                 },
                 ncyBreadcrumb: {
@@ -155,7 +155,7 @@ app.config(
                         return Category.get({id: $stateParams['categoryId']});
                     },
                     statistics: function ($stateParams, Statistics) {
-                        return Statistics.get({category: $stateParams['categoryId']});
+                        return Statistics.query({category: $stateParams['categoryId']});
                     }
                 },
                 ncyBreadcrumb: {
