@@ -6,6 +6,7 @@ import math
 import datetime
 
 from operator import add
+from collections import defaultdict
 
 from django.db import transaction
 
@@ -31,7 +32,10 @@ def new_statistics_element():
 def new_statistics_collection(item=None):
     statistics = {
         'count': {
-            'items': 0
+            'items': 0,
+
+            'category': defaultdict(int),
+            'country': defaultdict(int),
         },
 
         'volume': new_statistics_element(),
@@ -67,6 +71,12 @@ def update_statistics_element(statistics_collection, field, product, data_type=f
 
 def update_statistics_collection(statistics_collection, product):
     statistics_collection['count']['items'] += 1
+
+    if 'category' not in statistics_collection:
+        statistics_collection['count']['country'][product.country.id] += 1
+
+    if 'country' not in statistics_collection:
+        statistics_collection['count']['category'][product.category.id] += 1
 
     update_statistics_element(statistics_collection, 'volume', product)
     update_statistics_element(statistics_collection, 'price', product)
