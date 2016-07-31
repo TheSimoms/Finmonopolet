@@ -114,21 +114,42 @@ app.config(
                 templateUrl: 'static/app/statistics/statistics.view.html',
                 controller: 'StatisticsCtrl',
                 resolve: {
-                    category: function () {
-                        return null;
-                    },
                     statistics: function (Statistics) {
                         return Statistics.get();
+                    },
+                    category: function (Category) {
+                        return Category.get();
+                    },
+                    country: function (Country) {
+                        return Country.get();
                     }
+
                 },
                 ncyBreadcrumb: {
                     label: 'Statistikk'
                 }
             })
-            .state('statistics.details', {
+            .state('statistics.country', {
+                url: '/land/{countryId:int}',
+                templateUrl: 'static/app/statistics/statistics.country.view.html',
+                controller: 'StatisticsCountryCtrl',
+                resolve: {
+                    country: function ($stateParams, Country) {
+                        return Country.get({id: $stateParams['countryId']});
+                    },
+                    statistics: function ($stateParams, Statistics) {
+                        return Statistics.get({country: $stateParams['countryId']});
+                    }
+                },
+                ncyBreadcrumb: {
+                    parent: 'statistics.list',
+                    label: '{{ country.name }}'
+                }
+            })
+            .state('statistics.category', {
                 url: '/varegrupper/{categoryId:int}',
-                templateUrl: 'static/app/statistics/statistics.view.html',
-                controller: 'StatisticsCtrl',
+                templateUrl: 'static/app/statistics/statistics.category.view.html',
+                controller: 'StatisticsCategoryCtrl',
                 resolve: {
                     category: function ($stateParams, Category) {
                         return Category.get({id: $stateParams['categoryId']});
