@@ -4,6 +4,7 @@
         <div ng-bind="product.taste"></div>
     </div>
 
+    <!-- Additional information -->
     <uib-tabset active="active" class="product-information">
         <!-- Product description -->
         <uib-tab heading="Varebeskrivelse">
@@ -74,6 +75,15 @@
                 <div ng-if="product.store_category">
                     <dt>Butikkategori</dt>
                     <dd ng-bind="product.store_category.name"></dd>
+                </div>
+                <div class="margin-top" ng-if="product.wholesaler || product.distributor"></div>
+                <div ng-if="product.wholesaler">
+                    <dt>Grossist</dt>
+                    <dd ng-bind="product.wholesaler"></dd>
+                </div>
+                <div ng-if="product.distributor">
+                    <dt>Distributør</dt>
+                    <dd ng-bind="product.distributor"></dd>
                 </div>
             </dl>
         </uib-tab>

@@ -108,3 +108,27 @@
 .product-information dl > dd,dt {
     margin-bottom: 2px;
 }
+
+/* Pie charts */
+.pie {
+    text-align: center;
+}
+
+.pie > svg {
+    width: 50px;
+    height: 50px;
+
+    transform: rotate(-90deg);
+
+    background: black;
+
+    border-radius: 50%;
+    border: 1px solid black;
+}
+
+.pie > svg > circle {
+    fill: white;
+
+    stroke: black;
+    stroke-width: 32;
+}
