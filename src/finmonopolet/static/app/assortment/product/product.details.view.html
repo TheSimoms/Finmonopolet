@@ -1,91 +1,170 @@
 <div class="container">
-    <div class="page-header">
-        <h2 ng-bind="product.name"></h2>
-        <div ng-bind="product.taste"></div>
+    <div ng-if="product.$resolved">
+        <div class="page-header">
+            <h1 ng-bind="product.name"></h1>
+            <a
+                ui-sref="assortment.category({categoryId: product.category.id})"
+                ng-bind="product.category.name">
+            </a> fra
+            <a
+                ui-sref="assortment.country({countryId: product.country.id})"
+                ng-bind="product.country.name"></a>.
+            <em>
+                "{{ product.taste }}"
+            </em>
+        </div>
+
+        <div class="row margin-bottom-large">
+            <div class="col-xs-12 col-sm-4 margin-bottom text-center">
+                <div class="row margin-bottom-large">
+                    <h3>Kr. {{ product.price }} <small>{{ product.volume }} l</small></h3>
+                    <h3><small>
+                        Kr. {{ product.litre_price }} pr. liter<br />
+                        Kr. {{ product.alcohol_price }} pr. %
+                    </small></h3>
+                </div>
+
+                <div class="row">
+                    <a
+                        ng-href="{{ product.url }}" target="_blank"
+                        class="btn btn-primary" role="button">
+                        Se på Vinmonopolet.no
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-xs-12 col-sm-8">
+                <div class="row" ng-if="showCharactistics">
+                    <div class="col-xs-12">
+                        <h4>Karakteristikk</h4>
+                        <div
+                            class="col-xs-6 col-sm-2 margin-bottom"
+                            ng-if="product[characteristic.id] !== null"
+                            ng-repeat="characteristic in characteristics">
+                            <pie
+                                score="{{ product[characteristic.id] }}"
+                                size="50"
+                                text="{{ characteristic.title }}"></pie>
+                        </div>
+                    </div>
+                </div>
+                <div class="row" ng-show="product.suits.length > 0">
+                    <div class="col-xs-12">
+                        <h4>Passer til</h4>
+                        <div>
+                            <div
+                                class="col-xs-4 col-sm-2 margin-bottom"
+                                ng-repeat="suit in product.suits">
+                                <img
+                                    uib-tooltip="{{ suit.name }}"
+                                    width="50px" height="50px"
+                                    ng-src="/static/images/food-icons/{{ suits[suit.name] }}"
+                                    alt="{{ suit.name }}" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Additional information -->
+        <uib-tabset active="active" class="product-information">
+            <!-- Product description -->
+            <uib-tab heading="Varebeskrivelse">
+                <dl class="dl-horizontal">
+                    <div ng-if="product.taste">
+                        <dt>Smak</dt>
+                        <dd ng-bind="product.taste"></dd>
+                    </div>
+                    <div ng-if="product.color">
+                        <dt>Farge</dt>
+                        <dd ng-bind="product.color"></dd>
+                    </div>
+                    <div ng-if="product.smell">
+                        <dt>Lukt</dt>
+                        <dd ng-bind="product.smell"></dd>
+                    </div>
+                    <div class="margin-top" ng-if="product.packaging || product.cork"></div>
+                    <div ng-if="product.packaging">
+                        <dt>Emballasje</dt>
+                        <dd ng-bind="product.packaging"></dd>
+                    </div>
+                    <div ng-if="product.cork">
+                        <dt>Korktype</dt>
+                        <dd ng-bind="product.cork"></dd>
+                    </div>
+                    <div class="margin-top" ng-if="product.production_method || product.storage"></div>
+                    <div ng-if="product.production_method">
+                        <dt>Produksjonsmetode</dt>
+                        <dd ng-bind="product.production_method"></dd>
+                    </div>
+                    <div ng-if="product.storage">
+                        <dt>Oppbevaring</dt>
+                        <dd ng-bind="product.storage"></dd>
+                    </div>
+                </dl>
+            </uib-tab>
+
+            <!-- Product content -->
+            <uib-tab heading="Innhold">
+                <dl class="dl-horizontal">
+                    <div ng-if="product.alcohol">
+                        <dt>Alkoholprosent</dt>
+                        <dd ng-bind="product.alcohol + '%'"></dd>
+                    </div>
+                    <div class="margin-top" ng-if="product.sugar || product.acid"></div>
+                    <div ng-if="product.sugar">
+                        <dt>Sukker</dt>
+                        <dd ng-bind="product.sugar + ' gram pr. liter'"></dd>
+                    </div>
+                    <div ng-if="product.acid">
+                        <dt>Syre</dt>
+                        <dd ng-bind="product.acid + ' gram pr. liter'"></dd>
+                    </div>
+                    <div class="margin-top" ng-if="product.feedstock">
+                        <dt>Råvarer</dt>
+                        <dd ng-bind="product.feedstock"></dd>
+                    </div>
+                </dl>
+            </uib-tab>
+
+            <!-- Product information -->
+            <uib-tab heading="Vareinformasjon">
+                <dl class="dl-horizontal">
+                    <div>
+                        <dt>Årgang</dt>
+                        <dd ng-bind="product.vintage"></dd>
+                    </div>
+                    <div class="margin-top"></div>
+                    <div>
+                        <dt>Produsent</dt>
+                        <dd ng-bind="product.producer.name"></dd>
+                    </div>
+                    <div class="margin-top" ng-if="product.wholesaler || product.distributor"></div>
+                    <div ng-if="product.wholesaler">
+                        <dt>Grossist</dt>
+                        <dd ng-bind="product.wholesaler"></dd>
+                    </div>
+                    <div ng-if="product.distributor">
+                        <dt>Distributør</dt>
+                        <dd ng-bind="product.distributor"></dd>
+                    </div>
+                    <div class="margin-top" ng-if="product.selection || product.store_category"></div>
+                    <div ng-if="product.selection">
+                        <dt>Butikkutvalg</dt>
+                        <dd ng-bind="product.selection.name"></dd>
+                    </div>
+                    <div ng-if="product.store_category">
+                        <dt>Butikkategori</dt>
+                        <dd ng-bind="product.store_category.name"></dd>
+                    </div>
+                </dl>
+            </uib-tab>
+        </uib-tabset>
     </div>
 
-    <!-- Additional information -->
-    <uib-tabset active="active" class="product-information">
-        <!-- Product description -->
-        <uib-tab heading="Varebeskrivelse">
-            <dl class="dl-horizontal">
-                <div ng-if="product.taste">
-                    <dt>Smak</dt>
-                    <dd ng-bind="product.taste"></dd>
-                </div>
-                <div ng-if="product.color">
-                    <dt>Farge</dt>
-                    <dd ng-bind="product.color"></dd>
-                </div>
-                <div ng-if="product.smell">
-                    <dt>Lukt</dt>
-                    <dd ng-bind="product.smell"></dd>
-                </div>
-                <div class="margin-top" ng-if="product.packaging || product.cork"></div>
-                <div ng-if="product.packaging">
-                    <dt>Emballasje</dt>
-                    <dd ng-bind="product.packaging"></dd>
-                </div>
-                <div ng-if="product.cork">
-                    <dt>Korktype</dt>
-                    <dd ng-bind="product.cork"></dd>
-                </div>
-                <div class="margin-top" ng-if="product.production_method || product.storage"></div>
-                <div ng-if="product.production_method">
-                    <dt>Produksjonsmetode</dt>
-                    <dd ng-bind="product.production_method"></dd>
-                </div>
-                <div ng-if="product.storage">
-                    <dt>Oppbevaring</dt>
-                    <dd ng-bind="product.storage"></dd>
-                </div>
-            </dl>
-        </uib-tab>
-
-        <!-- Product content -->
-        <uib-tab heading="Innhold">
-            <dl class="dl-horizontal">
-                <div ng-if="product.alcohol">
-                    <dt>Alkoholprosent</dt>
-                    <dd ng-bind="product.alcohol + '%'"></dd>
-                </div>
-                <div class="margin-top" ng-if="product.sugar || product.acid"></div>
-                <div ng-if="product.sugar">
-                    <dt>Sukker</dt>
-                    <dd ng-bind="product.sugar + ' gram pr. liter'"></dd>
-                </div>
-                <div ng-if="product.acid">
-                    <dt>Syre</dt>
-                    <dd ng-bind="product.acid + ' gram pr. liter'"></dd>
-                </div>
-                <div class="margin-top" ng-if="product.feedstock">
-                    <dt>Råvarer</dt>
-                    <dd ng-bind="product.feedstock"></dd>
-                </div>
-            </dl>
-        </uib-tab>
-
-        <!-- Product store and proiducer information -->
-        <uib-tab heading="Butikkinformasjon">
-            <dl class="dl-horizontal">
-                <div ng-if="product.selection">
-                    <dt>Butikkutvalg</dt>
-                    <dd ng-bind="product.selection.name"></dd>
-                </div>
-                <div ng-if="product.store_category">
-                    <dt>Butikkategori</dt>
-                    <dd ng-bind="product.store_category.name"></dd>
-                </div>
-                <div class="margin-top" ng-if="product.wholesaler || product.distributor"></div>
-                <div ng-if="product.wholesaler">
-                    <dt>Grossist</dt>
-                    <dd ng-bind="product.wholesaler"></dd>
-                </div>
-                <div ng-if="product.distributor">
-                    <dt>Distributør</dt>
-                    <dd ng-bind="product.distributor"></dd>
-                </div>
-            </dl>
-        </uib-tab>
-    </uib-tabset>
+    <!-- Loading icon -->
+    <div ng-show="!product.$resolved">
+        <i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i>
+    </div>
 </div>

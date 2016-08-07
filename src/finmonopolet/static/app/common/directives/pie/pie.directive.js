@@ -16,7 +16,8 @@ app.directive('pie', function () {
             }
 
             $scope.circleStyle = {
-                'stroke-dasharray': ($scope.score / 12 * 100) + ' 100'
+                'stroke-dasharray': ($scope.score / 12 * 100) + ' 100',
+                'display': 'inline-block'
             };
         }
     };

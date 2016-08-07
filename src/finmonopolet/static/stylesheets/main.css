@@ -36,6 +36,19 @@
     margin-right: 5px;
 }
 
+.margin-top-large {
+    margin-top: 40px;
+}
+.margin-left-large {
+    margin-left: 40px;
+}
+.margin-bottom-large {
+    margin-bottom: 40px;
+}
+.margin-right-large {
+    margin-right: 40px;
+}
+
 .interact {
     cursor: pointer;
 }

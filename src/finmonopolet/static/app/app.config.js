@@ -25,7 +25,7 @@ app.config(
         $stateProvider
             .state('home', {
                 url: '/',
-                templateUrl: 'static/app/front-page/front-page.view.html',
+                templateUrl: '/static/app/front-page/front-page.view.html',
                 ncyBreadcrumb: {
                     label: 'Hjem'
                 }
@@ -37,14 +37,14 @@ app.config(
             })
             .state('assortment.list', {
                 url: '',
-                templateUrl: 'static/app/assortment/assortment.details.view.html',
+                templateUrl: '/static/app/assortment/assortment.details.view.html',
                 ncyBreadcrumb: {
                     label: 'Vareutvalg'
                 }
             })
             .state('assortment.category', {
                 url: '/varegrupper/{categoryId:int}',
-                templateUrl: 'static/app/assortment/assortment.details.view.html',
+                templateUrl: '/static/app/assortment/assortment.details.view.html',
                 controller: function ($scope, $stateParams, Category) {
                     $scope.filters = {
                         category: $stateParams.categoryId
@@ -59,20 +59,9 @@ app.config(
                     label: '{{ category.name }}'
                 }
             })
-            .state('assortment.product', {
-                url: '/varer/{productId:int}',
-                templateUrl: 'static/app/assortment/product/product.details.view.html',
-                controller: function ($scope, $stateParams, Product) {
-                    $scope.product = Product.get({ id: $stateParams.productId });
-                },
-                ncyBreadcrumb: {
-                    parent: 'assortment.list',
-                    label: '{{ product.name }}'
-                }
-            })
             .state('assortment.country', {
                 url: '/land/{countryId:int}',
-                templateUrl: 'static/app/assortment/assortment.details.view.html',
+                templateUrl: '/static/app/assortment/assortment.details.view.html',
                 controller: function ($scope, $stateParams, Country) {
                     $scope.filters = {
                         country: $stateParams.countryId
@@ -89,7 +78,7 @@ app.config(
             })
             .state('assortment.producer', {
                 url: '/produsenter/{producerId:int}',
-                templateUrl: 'static/app/assortment/assortment.details.view.html',
+                templateUrl: '/static/app/assortment/assortment.details.view.html',
                 controller: function ($scope, $stateParams, Producer) {
                     $scope.filters = {
                         producer: $stateParams.producerId
@@ -104,6 +93,52 @@ app.config(
                     label: '{{ producer.name }}'
                 }
             })
+            .state('assortment.product', {
+                url: '/varer/{productId:int}',
+                templateUrl: '/static/app/assortment/product/product.details.view.html',
+                controller: function ($scope, $stateParams, Product) {
+                    $scope.product = Product.get({ id: $stateParams.productId });
+
+                    $scope.characteristics = [
+                        { id: 'fullness', title: 'Fylde' },
+                        { id: 'freshness', title: 'Friskhet' },
+                        { id: 'tannins', title: 'Garvestoffer' },
+                        { id: 'bitterness', title: 'Bitterhet' },
+                        { id: 'sweetness', title: 'Sødme' },
+                    ];
+
+                    $scope.suits = {
+                        'Dessert, kake, frukt': 'cupcake.svg',
+                        'Storfe': 'cow.svg',
+                        'Fisk': 'fish.svg',
+                        'Grønnsaker': 'broccoli.svg',
+                        'Lam og sau': 'sheep.svg',
+                        'Storvilt': 'deer.svg',
+                        'Skalldyr': 'big-crab.svg',
+                        'Småvilt og fugl': 'rabbit.svg',
+                        'Aperitiff/avec': 'wine-glass.svg',
+                        'Svinekjøtt': 'pig-head.svg',
+                        'Ost': 'piece-of-cheese.svg',
+                        'Lyst kjøtt': 'chicken.svg',
+                    };
+
+                    $scope.showCharactistics = false;
+
+                    $scope.product.$promise.then(function () {
+                        for (var i = 0; i < $scope.characteristics.length; i++) {
+                            if ($scope.product[$scope.characteristics[i].id] !== null) {
+                                $scope.showCharactistics = true;
+
+                                return;
+                            }
+                        }
+                    });
+                },
+                ncyBreadcrumb: {
+                    parent: 'assortment.list',
+                    label: '{{ product.name }}'
+                }
+            })
             .state('statistics', {
                 url: '/statistikk',
                 template: '<div ui-view></div>',
@@ -111,7 +146,7 @@ app.config(
             })
             .state('statistics.list', {
                 url: '',
-                templateUrl: 'static/app/statistics/statistics.view.html',
+                templateUrl: '/static/app/statistics/statistics.view.html',
                 controller: 'StatisticsCtrl',
                 resolve: {
                     statistics: function (Statistics) {
@@ -131,7 +166,7 @@ app.config(
             })
             .state('statistics.country', {
                 url: '/land/{countryId:int}',
-                templateUrl: 'static/app/statistics/statistics.country.view.html',
+                templateUrl: '/static/app/statistics/statistics.country.view.html',
                 controller: 'StatisticsCountryCtrl',
                 resolve: {
                     country: function ($stateParams, Country) {
@@ -148,7 +183,7 @@ app.config(
             })
             .state('statistics.category', {
                 url: '/varegrupper/{categoryId:int}',
-                templateUrl: 'static/app/statistics/statistics.category.view.html',
+                templateUrl: '/static/app/statistics/statistics.category.view.html',
                 controller: 'StatisticsCategoryCtrl',
                 resolve: {
                     category: function ($stateParams, Category) {
@@ -170,7 +205,7 @@ app.config(
             })
             .state('store.list', {
                 url: '',
-                templateUrl: 'static/app/store/store.list.view.html',
+                templateUrl: '/static/app/store/store.list.view.html',
                 controller: 'StoreListCtrl',
                 resolve: {
                     stores: function (Store) {
@@ -186,7 +221,7 @@ app.config(
             })
             .state('store.details', {
                 url: '/{storeId:int}',
-                templateUrl: 'static/app/store/store.details.view.html',
+                templateUrl: '/static/app/store/store.details.view.html',
                 controller: 'StoreDetailsCtrl',
                 resolve: {
                     store: function ($stateParams, Store) {
