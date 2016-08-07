@@ -3,11 +3,11 @@
         <div class="page-header">
             <h1 ng-bind="product.name"></h1>
             <a
-                ui-sref="assortment.category({categoryId: product.category.id})"
+                ui-sref="assortment.category({id: product.category.id})"
                 ng-bind="product.category.name">
             </a> fra
             <a
-                ui-sref="assortment.country({countryId: product.country.id})"
+                ui-sref="assortment.country({id: product.country.id})"
                 ng-bind="product.country.name"></a>.
             <em>
                 "{{ product.taste }}"

@@ -200,14 +200,14 @@
                                     {{ item.name }}
                                 </a>
                             </h4>
-                            <a ui-sref="assortment.category({categoryId: item.category.id})">
+                            <a ui-sref="assortment.category({id: item.category.id})">
                                 <span>{{ item.category.name }}</span>
                             </a>
                             (<a class="item-details"
-                                ui-sref="assortment.country({countryId: item.country.id})">{{ item.country.name }}</a>)
+                                ui-sref="assortment.country({id: item.country.id})">{{ item.country.name }}</a>)
                             <br />
                             <span ng-if="item.producer">
-                                <a class="item-details" ui-sref="assortment.producer({producerId: item.producer.id})">
+                                <a class="item-details" ui-sref="assortment.producer({id: item.producer.id})">
                                     {{ item.producer.name }}
                                 </a>
                             </span>

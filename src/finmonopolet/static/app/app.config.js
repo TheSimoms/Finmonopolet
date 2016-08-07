@@ -20,6 +20,26 @@ app.config(
 
 app.config(
     function ($stateProvider, $urlRouterProvider) {
+        function productPage (url, resource, filter) {
+            return {
+                url: '/' + url + '/{id:int}',
+                templateUrl: '/static/app/assortment/assortment.details.view.html',
+                controller: function ($scope, $stateParams, $injector) {
+                    $scope.filters = {};
+
+                    $scope.filters[filter] = $stateParams.id;
+
+                    $scope.item = $injector.get(resource).get({ id: $stateParams.id }, function (item) {
+                        $scope.title = item.name;
+                    });
+                },
+                ncyBreadcrumb: {
+                    parent: 'assortment.list',
+                    label: '{{ item.name }}'
+                }
+            };
+        }
+
         $urlRouterProvider.otherwise('/');
 
         $stateProvider
@@ -42,57 +62,9 @@ app.config(
                     label: 'Vareutvalg'
                 }
             })
-            .state('assortment.category', {
-                url: '/varegrupper/{categoryId:int}',
-                templateUrl: '/static/app/assortment/assortment.details.view.html',
-                controller: function ($scope, $stateParams, Category) {
-                    $scope.filters = {
-                        category: $stateParams.categoryId
-                    };
-
-                    $scope.category = Category.get({ id: $stateParams.categoryId }, function (category) {
-                        $scope.title = category.name;
-                    });
-                },
-                ncyBreadcrumb: {
-                    parent: 'assortment.list',
-                    label: '{{ category.name }}'
-                }
-            })
-            .state('assortment.country', {
-                url: '/land/{countryId:int}',
-                templateUrl: '/static/app/assortment/assortment.details.view.html',
-                controller: function ($scope, $stateParams, Country) {
-                    $scope.filters = {
-                        country: $stateParams.countryId
-                    };
-
-                    $scope.country = Country.get({ id: $stateParams.countryId }, function (country) {
-                        $scope.title = country.name;
-                    });
-                },
-                ncyBreadcrumb: {
-                    parent: 'assortment.list',
-                    label: '{{ country.name }}'
-                }
-            })
-            .state('assortment.producer', {
-                url: '/produsenter/{producerId:int}',
-                templateUrl: '/static/app/assortment/assortment.details.view.html',
-                controller: function ($scope, $stateParams, Producer) {
-                    $scope.filters = {
-                        producer: $stateParams.producerId
-                    };
-
-                    $scope.producer = Producer.get({ id: $stateParams.producerId}, function (producer) {
-                        $scope.title = producer.name;
-                    });
-                },
-                ncyBreadcrumb: {
-                    parent: 'assortment.list',
-                    label: '{{ producer.name }}'
-                }
-            })
+            .state('assortment.category', productPage('varegrupper', 'Category', 'category'))
+            .state('assortment.country', productPage('land', 'Country', 'country'))
+            .state('assortment.producer', productPage('produsenter', 'Producer', 'producer'))
             .state('assortment.product', {
                 url: '/varer/{productId:int}',
                 templateUrl: '/static/app/assortment/product/product.details.view.html',
