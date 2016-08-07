@@ -92,7 +92,9 @@ def update_statistics_collection(statistics_collection, product):
 
 def collect_statistics():
     # Global statistics
-    global_statistics = new_statistics_collection()
+    global_statistics = {
+        'global': new_statistics_collection()
+    }
 
     # Statistics per category
     category_statistics = {
@@ -120,7 +122,7 @@ def collect_statistics():
     # Iterate all products
     for product in products:
         # Update statistics
-        update_statistics_collection(global_statistics, product)
+        update_statistics_collection(global_statistics['global'], product)
         update_statistics_collection(category_statistics[product.category.id], product)
         update_statistics_collection(country_statistics[product.country.id], product)
 
@@ -132,7 +134,7 @@ def collect_statistics():
     fields = ['volume', 'price', 'litre_price', 'alcohol_price', 'vintage']
 
     # Update average values
-    for statistics_dictionary in [category_statistics, country_statistics]:
+    for statistics_dictionary in [global_statistics, category_statistics, country_statistics]:
         for object_id in statistics_dictionary:
             statistics_collection = statistics_dictionary[object_id]
 

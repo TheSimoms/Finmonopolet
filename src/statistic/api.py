@@ -23,6 +23,9 @@ class StatisticViewSet(viewsets.ViewSet):
             filters['category__id'] = request.GET['category']
         elif ('country' in request.GET):
             filters['country__id'] = request.GET['country']
+        else:
+            filters['category'] = None
+            filters['country'] = None
 
         queryset = Statistics.objects.filter(**filters)
         serializer = StatisticSerializer(queryset, many=True, read_only=True)

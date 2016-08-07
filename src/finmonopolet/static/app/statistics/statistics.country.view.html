@@ -1,4 +1,11 @@
 <h2 ng-bind="'Statistikk - ' + country.name"></h2>
 
 <div class="row">
+    <h3>Prisutvikling</h3>
+    <canvas class="chart chart-line"
+        chart-data="price_development.data"
+        chart-labels="price_development.labels"
+        chart-series="price_development.series"
+        chart-options="price_development.options">
+    </canvas>
 </div>
