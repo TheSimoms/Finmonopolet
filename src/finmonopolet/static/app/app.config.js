@@ -116,14 +116,7 @@ app.config(
                 resolve: {
                     statistics: function (Statistics) {
                         return Statistics.query();
-                    },
-                    category: function (Category) {
-                        return Category.get();
-                    },
-                    country: function (Country) {
-                        return Country.get();
                     }
-
                 },
                 ncyBreadcrumb: {
                     label: 'Statistikk'

@@ -1,6 +1,6 @@
 
 
-app.controller('StatisticsCtrl', function ($scope, category, country, statistics) {
-    $scope.category = category;
-    $scope.countries = country;
+app.controller('StatisticsCtrl', function ($scope, Category, Country, statistics) {
+    $scope.categories = Category.get();
+    $scope.countries = Country.get();
 });
