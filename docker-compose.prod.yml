@@ -1,0 +1,21 @@
+version: '3.7'
+
+services:
+  frontend:
+    build:
+      target: prod
+      args:
+        API_HOST: "http://${HTTP_HOST}"
+  backend:
+    build:
+      target: prod
+    environment:
+      - HTTP_HOST
+      - HTTP_PORT
+      - SECRET_KEY
+      - VINMONOPOLET_API_KEY
+      - DB_HOST
+      - DB_NAME
+      - DB_USER
+      - DB_PASSWORD
+      - DB_PORT

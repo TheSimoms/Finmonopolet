@@ -1,0 +1,51 @@
+import json
+import logging
+import os
+import ssl
+from urllib.error import HTTPError
+from urllib.request import Request, urlopen
+
+MAX_RESULTS = 500
+
+
+def fetch_url_json_batched(url, max_results=MAX_RESULTS):
+    logging.info('Fetching JSON data from {}'.format(url))
+
+    results = []
+    start = 0
+
+    while True:
+        batch = _fetch_batch(url, start, max_results)
+
+        results.extend(batch)
+
+        if not batch:
+            break
+
+        start += len(batch)
+
+    logging.info('JSON data fetched. {} items'.format(len(results)))
+
+    return results
+
+
+def _fetch_batch(url, start, max_results):
+    logging.info(
+        'Fetching items {} to {}'.format(start, start + max_results)
+    )
+
+    request = Request(
+        '{}?start={}&maxResults={}'.format(url, start, max_results)
+    )
+
+    request.add_header('Ocp-Apim-Subscription-Key', os.environ['VINMONOPOLET_API_KEY'])
+
+    try:
+        response = urlopen(request, context=ssl._create_unverified_context())
+    except HTTPError as exception:
+        if exception.code == 400:
+            return []
+        else:
+            raise exception
+
+    return json.loads(response.read())
