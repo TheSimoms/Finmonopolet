@@ -9,13 +9,16 @@ from products.models import Product, ProductType, Country, Producer
 from utils.vinmonopolet import fetch_url_json_batched
 
 
-def run():
+def run(*args):
     logging.basicConfig(level=logging.INFO)
 
     logging.info('Starting product database update.')
 
-    _update_product_information()
-    _update_product_stock()
+    if not args or 'information' in args:
+        _update_product_information()
+
+    if not args or 'stock' in args:
+        _update_product_stock()
 
     logging.info('Database update complete.')
 
