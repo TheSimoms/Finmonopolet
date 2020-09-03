@@ -36,7 +36,8 @@ def _update_product_information():
     logging_interval = math.ceil(number_of_products / 100)
 
     # Mark all products as inactive
-    Product.objects.update(active=False)
+    with transaction.atomic():
+        Product.objects.update(active=False)
 
     for i, product in enumerate(products):
         try:
