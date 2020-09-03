@@ -28,6 +28,7 @@ def _update_product_information():
 
     products = fetch_url_json_batched(
         'https://apis.vinmonopolet.no/products/v0/details-normal',
+        max_results=500
     )
 
     logging.info('Reading products into the local database.')
@@ -56,7 +57,6 @@ def _update_product_stock():
 
     product_stock = fetch_url_json_batched(
         'https://apis.vinmonopolet.no/products/v0/accumulated-stock',
-        max_results=30000,
     )
 
     logging.info('Reading product stock into the local database.')

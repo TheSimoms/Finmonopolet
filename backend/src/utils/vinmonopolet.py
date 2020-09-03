@@ -6,7 +6,7 @@ import time
 from urllib.error import HTTPError
 from urllib.request import Request, urlopen
 
-MAX_RESULTS = 500
+MAX_RESULTS = None
 
 
 def fetch_url_json_batched(url, max_results=MAX_RESULTS):
@@ -32,12 +32,15 @@ def fetch_url_json_batched(url, max_results=MAX_RESULTS):
 
 def _fetch_batch(url, start, max_results, abort_on_429=False):
     logging.info(
-        'Fetching items {} to {}'.format(start, start + max_results)
+        'Fetching items starting at {}'.format(start)
     )
 
-    request = Request(
-        '{}?start={}&maxResults={}'.format(url, start, max_results)
-    )
+    url += '?start={}'.format(start)
+
+    if max_results is not None:
+        url += '&maxResults={}'.format(max_results)
+
+    request = Request(url)
 
     request.add_header('Ocp-Apim-Subscription-Key', os.environ['VINMONOPOLET_API_KEY'])
 
