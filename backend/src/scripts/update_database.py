@@ -105,7 +105,7 @@ def _parse_product_json(product_info):
         'volume': product_info['basic']['volume'],
         'price': product_info['prices'][0]['salesPrice'],
         'litre_price': litre_price,
-        'alcohol_price': litre_price / alcohol_content,
+        'alcohol_price': litre_price / alcohol_content * 100,
         'vintage': _optional_value(product_info['basic']['vintage']),
         'alcohol_content': alcohol_content,
 
