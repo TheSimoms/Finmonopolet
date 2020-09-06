@@ -2,14 +2,40 @@ version: '3.7'
 
 services:
   frontend:
-    build: frontend
-    environment:
-      - DEBUG
+    build:
+      context: frontend
+      args:
+        API_HOST: "${HTTP_SCHEME:-http}://${HTTP_HOST}"
     ports:
       - "${HTTP_PORT:-8080}:8080"
     depends_on:
-     - backend
+      - backend
   backend:
     build: backend
     ports:
-      - "${HTTP_PORT_BACKEND:-8081}:8081"
+      - "${HTTP_PORT_BACKEND:-8081}:8080"
+    depends_on:
+      - database
+    environment:
+      - HTTP_HOST
+      - HTTP_PORT
+      - SECRET_KEY
+      - VINMONOPOLET_API_KEY
+      - DB_HOST
+      - DB_NAME
+      - DB_USER
+      - DB_PASSWORD
+      - DB_PORT
+  database:
+    image: postgres:11.2
+    restart: always
+    environment:
+      POSTGRES_DB: "${DB_NAME}"
+      POSTGRES_USER: "${DB_USER}"
+      POSTGRES_PASSWORD: "${DB_PASSWORD}"
+    ports:
+      - "127.0.0.1:${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - database-data:/var/lib/postgresql/data
+volumes:
+  database-data:

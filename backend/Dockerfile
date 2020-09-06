@@ -18,11 +18,11 @@ RUN pip install -r requirements.txt
 # Add project files
 COPY src src
 
-CMD ["python" ,"src/manage.py", "runserver", "0.0.0.0:8081"]
+CMD ["python" ,"src/manage.py", "runserver", "0.0.0.0:8080"]
 
 # Prod stage
 FROM dev as prod
 
 WORKDIR /app/src
 
-CMD ["gunicorn", "finmonopolet.wsgi:application", "--workers=4", "--threads=4", "--bind", "0.0.0.0:8081"]
+CMD ["gunicorn", "finmonopolet.wsgi:application", "--workers=4", "--threads=4", "--bind", "0.0.0.0:8080"]

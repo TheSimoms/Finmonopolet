@@ -14,26 +14,14 @@ services:
       HTTP_HOST: localhost
       HTTP_PORT: "${HTTP_PORT:-8080}"
       SECRET_KEY: super_secret_key
-      VINMONOPOLET_API_KEY: "${VINMONOPOLET_API_KEY}"
-      DB_HOST: db
+      DB_HOST: database
       DB_NAME: finmonopolet
       DB_USER: finmonopolet
       DB_PASSWORD: password
-    depends_on:
-      - db
     volumes:
       - ./backend/src:/app/src
-  db:
-    image: postgres:11.2
-    restart: always
+  database:
     environment:
-      POSTGRES_DB: "${DB_NAME:-finmonopolet}"
-      POSTGRES_USER: "${DB_USER:-finmonopolet}"
-      POSTGRES_PASSWORD: "${DB_PASSWORD:-password}"
-    ports:
-      - "127.0.0.1:${POSTGRES_PORT:-5432}:5432"
-    volumes:
-      - db-data:/var/lib/postgresql/data
-
-volumes:
-  db-data:
+      POSTGRES_DB: finmonopolet
+      POSTGRES_USER: finmonopolet
+      POSTGRES_PASSWORD: password
