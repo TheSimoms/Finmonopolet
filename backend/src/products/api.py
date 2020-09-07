@@ -89,10 +89,10 @@ class ProductViewSet(viewsets.ReadOnlyModelViewSet):
     filter_class = ProductFilter
 
     ordering_fields = [
-        'sort_name', 'volume', 'price', 'litre_price', 'alcohol_price', 'vintage',
-        'product_type', 'country', 'producer',
+        'sort_name', 'volume', 'price', 'litre_price', 'alcohol_price', 'alcohol_content',
+        'vintage', 'product_type', 'country', 'producer',
     ]
     search_fields = [
         'name', 'product_number', 'vintage', 'product_type__name', 'country__name',
-        'producer__name',
+        'producer__name', 'volume', 'price', 'litre_price', 'alcohol_price', 'alcohol_content',
     ]
