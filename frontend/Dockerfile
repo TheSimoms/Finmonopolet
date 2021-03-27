@@ -1,33 +1,26 @@
-# Dev server
-FROM node AS dev
+FROM node:14-alpine AS dev
 
 WORKDIR /app
 
-# Install dependencies
-COPY package.json package-lock.json ./
+COPY rollup.config.js ./
+COPY tsconfig.json ./
+COPY package*.json ./
+
 RUN npm install
 
-COPY gulpfile.js gulpfile.js
-COPY src/ src/
-
-CMD ["npm", "run", "dev"]
-
-
-# Build the app
-FROM dev as build
+COPY ./src ./src
+COPY ./public ./public
 
 ARG API_HOST
-ENV API_HOST=${API_HOST}
+ENV API_HOST=$API_HOST
 
-RUN ["npm", "run", "build"]
+EXPOSE 5000
+ENV HOST=0.0.0.0
 
+CMD [ "npm", "run", "dev" ]
 
-# Prod server
-FROM nginx:alpine as prod
+FROM dev AS prod
 
-COPY nginx.conf /etc/nginx/nginx.conf
+RUN npm run build
 
-# Add the app
-COPY --from=build /app/dist/ /usr/share/nginx/html/
-
-CMD ["nginx", "-g", "daemon off;"]
+CMD [ "npm", "start" ]

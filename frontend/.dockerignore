@@ -1,8 +1,5 @@
 /node_modules/
-/public/build/
 
 .vscode
-
-.env
 
 .DS_Store

@@ -4,6 +4,8 @@ services:
   frontend:
     build:
       target: dev
+      args:
+        API_HOST: "${HTTP_SCHEME:-http}://${HTTP_HOST}:${HTTP_PORT_BACKEND:-8081}"
     volumes:
       - ./frontend/src:/app/src
   backend:
