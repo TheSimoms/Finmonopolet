@@ -14,6 +14,8 @@ _HTTP_PORT = os.environ['HTTP_PORT']
 
 ALLOWED_HOSTS = [
     _HTTP_HOST,
+    'localhost',
+    '127.0.0.1',
 ]
 
 CORS_ORIGIN_WHITELIST = [
